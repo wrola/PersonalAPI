@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { InputAnswerDto } from './dto/input-answer.dto';
 import { OutputAnswerDto } from './dto/output-answer.dto';
 import { AnswerService } from '../answer.service';
@@ -9,8 +9,11 @@ export class AnswerController {
   @Post()
   async answer(@Body() body: InputAnswerDto): Promise<OutputAnswerDto> {
     const { question } = body;
+
+    Logger.log(`The question is: ${question}`);
     if (!question) throw new Error('Question not found');
     const result = await this.answerService.get(question);
+    Logger.log(`The anwser is: ${result}`);
     return new OutputAnswerDto(result);
   }
 }
