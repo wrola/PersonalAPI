@@ -12,6 +12,8 @@ export class AnswerService {
       Fact today is ${new Date().toISOString}
       ###rules
       If you do not know, just say I do not know
+      Answer in the language which question will be.
+      Follow the format if it's propose
       `;
       const { content: answer } = await this.model.call([
         new SystemMessage(systemContext),
