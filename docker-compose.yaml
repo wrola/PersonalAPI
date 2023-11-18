@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+
+  api:
+    container_name: api-devs-backend
+    build: .
+    image: api
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    networks:
+      - api_devs_network
+
+
+  qdrant_db:
+    container_name: api-devs-qdrant
+    image: qdrant/qdrant:latest
+    restart: always
+    ports:
+      - "6335:6333"
+    volumes:
+      - /qdrant_storage:/qdrant/storage
+    env_file:
+      - .env
+    networks:
+      - api_devs_network
+
+  postgres_db:
+    container_name: api-devs-postgres
+    image: postgres:latest
+    restart: always
+    ports:
+      - '5435:5432'
+    volumes:
+      - /pg_data:/var/lib/postgresql/data
+
+    env_file:
+      - .env
+    networks:
+      - api_devs_network
+
+
+networks:
+  api_devs_network:
+    driver: bridge
