@@ -12,7 +12,7 @@ export class AnswerController {
 
     Logger.log(`The question is: ${question}`);
     if (!question) throw new Error('Question not found');
-    const result = await this.answerService.get(question);
+    const result = await this.answerService.outsideCall(question);
     Logger.log(`The answer is: ${result}`);
     return new OutputAnswerDto(result);
   }
