@@ -29,7 +29,7 @@ export class AnswerService {
   }
   async outsideCall(question: string): Promise<string> {
     const openAiResult = await this.get(question);
-    const regex = /(Przepraszam|Nie znam|Nie wiem)/;
+    const regex = /(Przepraszam|Nie znam|Nie wiem|Nie jestem w stanie)/;
     Logger.log(openAiResult);
     if (!regex.test(openAiResult)) {
       return openAiResult;
