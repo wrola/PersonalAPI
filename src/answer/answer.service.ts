@@ -5,17 +5,19 @@ import { getJson } from 'serpapi';
 @Injectable()
 export class AnswerService {
   constructor(private model: any) {}
-  async get(question: string): Promise<string> {
+  async get(question: string, context?: string): Promise<string> {
     try {
       const systemContext = `Answer concisely and briefly basing on the following context:
+      Odpowiadaj konrektnie i zwieźle
       ###context
-      You have a broad general knowledge
-      Fact today is ${new Date().toISOString}
-      ###rules
-      If you do not know, just say I do not know
-      Answer in the language which question will be.
-      Follow the format if it's propose
+      Masz ogólna wiedze i wiadomości z tego kontekstu ${JSON.stringify(
+        context,
+      )}
+      Dzis jest ${new Date().toISOString}
+      ###zasady
+      Jeśli nie wiesz, pisz "Nie wiem"
       `;
+      Logger.log(systemContext);
       const { content: answer } = await this.model.call([
         new SystemMessage(systemContext),
         new HumanMessage(question),
@@ -26,20 +28,23 @@ export class AnswerService {
     }
   }
   async outsideCall(question: string): Promise<string> {
-    let result;
     const openAiResult = await this.get(question);
-    const regex = /(I do not know|Przepraszam, ale nie wiem)/;
+    const regex = /(Przepraszam|Nie znam|Nie wiem)/;
     Logger.log(openAiResult);
     if (!regex.test(openAiResult)) {
       return openAiResult;
     }
-    const { knowledge_graph } = await getJson({
+    const { organic_results } = await getJson({
       engine: 'google',
       api_key: process.env.SERP_API_KEY,
       q: `${question}`,
     });
-    Logger.log(knowledge_graph.description);
+    Logger.log(`Answer from SERP ${JSON.stringify(organic_results[0])}`);
 
-    return knowledge_graph.description;
+    const openAIWithGoogleContext = await this.get(
+      question,
+      organic_results[0],
+    );
+    return openAIWithGoogleContext;
   }
 }
