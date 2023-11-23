@@ -5,17 +5,17 @@ import { getJson } from 'serpapi';
 @Injectable()
 export class AnswerService {
   constructor(private model: any) {}
-  async get(question: string, context?: string): Promise<string> {
+  async get(question: string): Promise<string> {
     try {
-      const systemContext = `Answer concisely and briefly basing on the following context:
+      const systemContext = `
       Odpowiadaj konrektnie i zwieźle
       ###context
-      Masz ogólna wiedze i wiadomości z tego kontekstu ${JSON.stringify(
-        context,
-      )}
+      Masz ogólna wiedze
+
       Dzis jest ${new Date().toISOString}
       ###zasady
       Jeśli nie wiesz, pisz "Nie wiem"
+      Nie dodawaj komentarzy, odpowiadaj bardzo zwięźle i konkretnie
       `;
       Logger.log(systemContext);
       const { content: answer } = await this.model.call([
@@ -41,10 +41,6 @@ export class AnswerService {
     });
     Logger.log(`Answer from SERP ${JSON.stringify(organic_results[0])}`);
 
-    const openAIWithGoogleContext = await this.get(
-      question,
-      organic_results[0],
-    );
-    return openAIWithGoogleContext;
+    return organic_results[0].link;
   }
 }
