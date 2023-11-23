@@ -26,18 +26,20 @@ export class AnswerService {
     }
   }
   async outsideCall(question: string): Promise<string> {
+    let result;
     const openAiResult = await this.get(question);
-    const regex = /I do not know/;
+    const regex = /(I do not know|Przepraszam, ale nie wiem)/;
     Logger.log(openAiResult);
     if (!regex.test(openAiResult)) {
       return openAiResult;
     }
-    const { organic_results } = await getJson({
+    const { knowledge_graph } = await getJson({
       engine: 'google',
       api_key: process.env.SERP_API_KEY,
       q: `${question}`,
     });
-    Logger.log(organic_results[0].snippet);
-    return openAiResult;
+    Logger.log(knowledge_graph.description);
+
+    return knowledge_graph.description;
   }
 }
