@@ -1,23 +1,23 @@
 import { Module } from '@nestjs/common';
-import { AnswerService } from './answer.service';
+import { ConversationService } from './Conversation.service';
 import { ChatOpenAI } from 'langchain/chat_models/openai';
-import { AnswerController } from './api/answer.controller';
+import { ConversationController } from './api/Conversation.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [ConfigModule],
-  controllers: [AnswerController],
+  controllers: [ConversationController],
   providers: [
     {
-      provide: AnswerService,
+      provide: ConversationService,
       useFactory: (configService) => {
         const model = new ChatOpenAI({
           modelName: <string>configService.get('OPEN_MODEL'),
         });
-        return new AnswerService(model);
+        return new ConversationService(model);
       },
       inject: [ConfigService],
     },
   ],
 })
-export class AnswerModule {}
+export class ConversationModule {}
