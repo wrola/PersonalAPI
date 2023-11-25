@@ -22,8 +22,8 @@ import { MessagesRepository } from '../memory/infrastructure/message.repository'
     },
     {
       provide: MessagesRepository,
-      useClass: MessagesRepository
-    }
+      useClass: MessagesRepository,
+    },
   ],
 })
 export class ConversationModule {}

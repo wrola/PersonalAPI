@@ -5,6 +5,7 @@ import { HealthModule } from './health/health.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { config } from './database/config';
 import { getMetadataArgsStorage } from 'typeorm';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,13 +24,12 @@ import { getMetadataArgsStorage } from 'typeorm';
         config.entities = getMetadataArgsStorage().tables.map(
           (tbl) => tbl.target,
         ) as string[];
-
         config.migrationsRun =
           configService.get('DATABASE_RUN_MIGRATIONS') === 'true';
-
         return <TypeOrmModuleOptions>{ ...config, autoloadEntities: true };
       },
     }),
+    AuthModule,
   ],
   controllers: [],
   providers: [],
