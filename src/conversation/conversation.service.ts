@@ -1,9 +1,14 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { HumanMessage, SystemMessage } from 'langchain/schema';
+import { AIMessage, HumanMessage, SystemMessage } from 'langchain/schema';
+import { MessagesRepository } from '../memory/infrastructure/message.repository';
+import { Message } from '../memory/core/entities/message.entity';
 
 @Injectable()
 export class ConversationService {
-  constructor(private model: any) {}
+  constructor(
+    private model: any,
+    private messageRepository: MessagesRepository,
+  ) {}
   async call(question: string): Promise<string> {
     try {
       const conversationContext = new SystemMessage(`
@@ -39,6 +44,30 @@ export class ConversationService {
       return Conversation;
     } catch (err) {
       throw new BadRequestException(err, 'The OpenAI API Error');
+    }
+  }
+  async currentConversation(id: string) {
+    const conversationsActive = await this.messageRepository.exist();
+    if (!conversationsActive) {
+      console.info('Database not initialized. Moving on...');
+      return [];
+    }
+    try {
+      const messages = await this.messageRepository.findLatest(id);
+      if (!messages.length) {
+        console.log('no messages');
+        return [];
+      }
+      console.log('conversation found');
+
+      return messages
+        .map((message: any) => {
+          return [new HumanMessage(message.human), new AIMessage(message.ai)];
+        })
+        .flat();
+    } catch (e) {
+      console.info('Database not initialized. Moving on...');
+      return [];
     }
   }
 }
