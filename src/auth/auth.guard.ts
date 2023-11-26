@@ -7,7 +7,7 @@ import {
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly apiKeys: Array<string>) {}
+  constructor(private readonly validApiKeys: Array<string>) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -15,14 +15,17 @@ export class AuthGuard implements CanActivate {
     if (!apiKey) {
       throw new UnauthorizedException();
     }
-    if (!this.apiKeys.includes(apiKey)) {
+    if (!this.isApiKeyValid(apiKey)) {
       throw new UnauthorizedException();
     }
     return true;
   }
 
-  private extractKeyFromHeader(request: Request): string | undefined {
+  private extractKeyFromHeader(request: any): string | undefined {
     const key = request.headers['x-api-key'];
     return key;
+  }
+  private isApiKeyValid(key: string) {
+    return this.validApiKeys.includes(key);
   }
 }

@@ -70,6 +70,14 @@ export class ConversationService {
       return [];
     }
   }
+  async saveMessage(conversationId: string, query, anwser) {
+    try {
+      const message = Message.create(conversationId, query, anwser);
+      await this.messageRepository.save(message);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }
 
 export const currentDate = () => {
