@@ -1,5 +1,5 @@
 import { Body, Controller, Headers, Logger, Post, Res } from '@nestjs/common';
-import { ConversationService } from '../Conversation.service';
+import { ConversationService } from '../conversation.service';
 import { InputConversationDto } from './dto/input-conversation.dto';
 import { v4 } from 'uuid';
 import { OutputConversationDto } from './dto/output-conversation.dto';
@@ -22,7 +22,7 @@ export class ConversationController {
 
     const conversation = conversationId
       ? await this.conversationService.currentConversation(conversationId)
-      : v4();
+      : (conversationId = v4());
 
     Logger.log(`${conversation}`);
 
@@ -35,8 +35,9 @@ export class ConversationController {
       question,
       result ?? 'No answer.',
     );
-    Logger.log(`The Conversation is: ${result}`);
+    Logger.log(`The answer is: ${result}`);
 
     return new OutputConversationDto(result, conversationId);
   }
 }
+// TODO add github actions!

@@ -1,13 +1,22 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { AIMessage, HumanMessage, SystemMessage } from 'langchain/schema';
-import { MessagesRepository } from '../memory/infrastructure/message.repository';
 import { Message } from '../memory/core/entities/message.entity';
+import {
+  IMessagesRepository,
+  MESSAGE_REPOSITORY,
+} from '../memory/infrastructure/message.repository';
 
 @Injectable()
 export class ConversationService {
   constructor(
     private model: any,
-    private messageRepository: MessagesRepository,
+    @Inject(MESSAGE_REPOSITORY)
+    private messageRepository: IMessagesRepository,
   ) {}
   async call(question: string): Promise<string> {
     try {
@@ -70,9 +79,9 @@ export class ConversationService {
       return [];
     }
   }
-  async saveMessage(conversationId: string, query, anwser) {
+  async saveMessage(conversationId: string, query, answer) {
     try {
-      const message = Message.create(conversationId, query, anwser);
+      const message = Message.create(conversationId, query, answer);
       await this.messageRepository.save(message);
     } catch (e) {
       console.log(e);

@@ -6,9 +6,11 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { Message } from './memory/core/entities/message.entity';
 import { Memory } from './memory/core/entities/memory.entity';
+import { MemoryModule } from './memory/memory.module';
 
 @Module({
   imports: [
+    MemoryModule,
     ConversationModule,
     ConfigModule.forRoot({
       isGlobal: true,

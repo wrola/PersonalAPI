@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ConversationService } from './Conversation.service';
+import { ConversationService } from './conversation.service';
 import { ChatOpenAI } from 'langchain/chat_models/openai';
-import { ConversationController } from './api/Conversation.controller';
+import { ConversationController } from './api/conversation.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MemoryModule } from '../memory/memory.module';
-import { MessagesRepository } from '../memory/infrastructure/message.repository';
+import { MESSAGE_REPOSITORY } from '../memory/infrastructure/message.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Message } from '../memory/core/entities/message.entity';
 
 @Module({
   imports: [ConfigModule, MemoryModule],
@@ -12,17 +14,13 @@ import { MessagesRepository } from '../memory/infrastructure/message.repository'
   providers: [
     {
       provide: ConversationService,
-      useFactory: (configService, messageRepository) => {
+      useFactory: async (configService, messageRepository) => {
         const model = new ChatOpenAI({
           modelName: <string>configService.get('OPEN_MODEL'),
         });
         return new ConversationService(model, messageRepository);
       },
-      inject: [ConfigService, MessagesRepository],
-    },
-    {
-      provide: MessagesRepository,
-      useClass: MessagesRepository,
+      inject: [ConfigService, MESSAGE_REPOSITORY],
     },
   ],
 })
