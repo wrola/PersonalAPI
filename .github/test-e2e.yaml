@@ -1,0 +1,43 @@
+name: Test App
+
+on: [push]
+
+jobs:
+  build:
+    timeout-minutes: 10
+
+    strategy:
+      matrix:
+        os: ubuntu-latest
+        node-version: [20.9.0]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install packages
+        run: npm install
+
+      - name : Build application:
+        run: npm run build
+
+      - name: Run migrations
+        run: npm run migration:run
+
+      - name: Run e2e tests
+        run: npm run test:e2e
