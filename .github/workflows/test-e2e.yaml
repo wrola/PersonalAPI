@@ -9,7 +9,7 @@ env:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: test
   OPENAI_API_KEY: sk-0A
-  API_KEYS: ["wrt42Ri4"]
+  API_KEYS: '["wrt42Ri4"]'
 
 jobs:
   build:

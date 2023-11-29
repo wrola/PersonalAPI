@@ -18,7 +18,10 @@ describe('AppController (e2e)', () => {
   it('/health (GET)', async () => {
     return request(app.getHttpServer())
       .get('/health')
-      .set({ 'x-api-key': process.env.API_KEYS[0], Accept: 'application/json' })
+      .set({
+        'x-api-key': JSON.parse(process.env.API_KEYS)[0],
+        Accept: 'application/json',
+      })
       .expect(200);
   });
 });
