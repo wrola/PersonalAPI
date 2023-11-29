@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import * as dotenv from 'dotenv';
+dotenv.config();
 import { DataSource } from 'typeorm';
 import { Memory } from './memory/core/entities/memory.entity';
 import { Message } from './memory/core/entities/message.entity';
