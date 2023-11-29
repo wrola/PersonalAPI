@@ -60,6 +60,12 @@ jobs:
 
       - name: Run migrations
         run: npm run migration:run
+        env:
+          POSTGRES_USER: ${{env.POSTGRES_USER}}
+          POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
+          POSTGRES_HOST: ${{env.POSTGRES_HOST}}
+          POSTGRES_PORT: 5432
+
 
       - name: Run e2e tests
         run: npm run test:e2e
