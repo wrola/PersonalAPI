@@ -8,7 +8,6 @@ env:
   POSTGRES_HOST: postgres
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: test
-  DATABASE_NAME: postgres
 
 jobs:
   build:
