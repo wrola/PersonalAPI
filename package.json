@@ -17,7 +17,7 @@
       "test:watch": "jest --watch",
       "test:cov": "jest --coverage",
       "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-      "test:e2e": "jest --config ./test/jest-e2e.json",
+      "test:e2e": "jest --config ./test/jest-e2e.json --detectOpenHandles",
       "typeorm": "npm run build && typeorm-ts-node-commonjs ",
       "migration:generate": "npm run typeorm migration:generate --dataSource dist/data-source.js",
       "migration:run": "npx typeorm-ts-node-commonjs migration:run --dataSource dist/data-source.js",

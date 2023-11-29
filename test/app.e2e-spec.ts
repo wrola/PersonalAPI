@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { faker } from '@faker-js/faker';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -16,10 +15,10 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/answer (POST)', () => {
+  it('/health (GET)', async () => {
     return request(app.getHttpServer())
-      .post('/answer')
-      .send({ question: faker.lorem.word(10) })
+      .get('/health')
+      .set({ 'x-api-key': process.env.API_KEYS[0], Accept: 'application/json' })
       .expect(200);
   });
 });
