@@ -22,7 +22,7 @@ services:
     ports:
       - "6335:6333"
     volumes:
-      - /qdrant_storage:/qdrant/storage
+      - qdrant_storage:/qdrant/storage
     env_file:
       - .env
     networks:
@@ -48,3 +48,4 @@ networks:
 
 volumes:
   postgres:
+  qdrant_storage:
