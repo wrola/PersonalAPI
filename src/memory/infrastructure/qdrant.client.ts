@@ -1,3 +1,5 @@
+import { Logger } from "@nestjs/common";
+
 export const QDRANT_CLIENT = Symbol('QDRANT_CLIENT');
 
 export interface IQdrantClient {

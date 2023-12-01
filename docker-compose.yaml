@@ -3,7 +3,7 @@ version: '3.9'
 services:
 
   api:
-    container_name: api-devs-backend
+    container_name: api
     build: .
     image: api
     restart: unless-stopped
@@ -12,24 +12,24 @@ services:
     env_file:
       - .env
     networks:
-      - api_devs_network
+      - network
 
 
   qdrant_db:
-    container_name: api-devs-qdrant
+    container_name: qdrant
     image: qdrant/qdrant:latest
     restart: always
     ports:
-      - "6335:6333"
+      - "6333:6333"
     volumes:
       - qdrant_storage:/qdrant/storage
     env_file:
       - .env
     networks:
-      - api_devs_network
+      - network
 
   postgres_db:
-    container_name: api-devs-postgres
+    container_name: postgres
     image: postgres:latest
     restart: always
     ports:
@@ -39,11 +39,11 @@ services:
     env_file:
       - .env
     networks:
-      - api_devs_network
+      - network
 
 
 networks:
-  api_devs_network:
+  network:
     driver: bridge
 
 volumes:
