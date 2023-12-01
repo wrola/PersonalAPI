@@ -10,6 +10,7 @@ env:
   POSTGRES_PASSWORD: test
   OPENAI_API_KEY: sk-0A
   API_KEYS: '["wrt42Ri4"]'
+  QDRANT_URL: http://localhost:6333
 
 jobs:
   build:
@@ -41,6 +42,11 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      qdrant:
+       image: qdrant
+        ports:
+          - 6333:6333
+  
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-node@v3
