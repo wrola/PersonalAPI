@@ -10,6 +10,7 @@ import {
 } from './infrastructure/message.repository';
 import { QDRANT_CLIENT, initVectorStore } from './infrastructure/qdrant.client';
 import { EMBEDDING_PRODUCER } from './infrastructure/embedding.producer';
+import { MEMORY_SERVICE, MemoryService } from './memory.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Message]), ConfigModule],
@@ -35,6 +36,10 @@ import { EMBEDDING_PRODUCER } from './infrastructure/embedding.producer';
       useFactory: () => {
         return new OpenAIEmbeddings({ maxConcurrency: 5 });
       },
+    },
+    {
+      provide: MEMORY_SERVICE,
+      useClass: MemoryService,
     },
   ],
   exports: [MESSAGE_REPOSITORY],

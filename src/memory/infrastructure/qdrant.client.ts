@@ -1,5 +1,4 @@
-import { Logger } from "@nestjs/common";
-
+export const MEMORIES = 'memories';
 export const QDRANT_CLIENT = Symbol('QDRANT_CLIENT');
 
 export interface IQdrantClient {
@@ -26,4 +25,3 @@ export const initVectorStore = async (qdrant) => {
     });
   }
 };
-export const MEMORIES = 'memories';

@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   IMemoryRepository,
   MEMORY_REPOSITORY,
@@ -15,6 +15,7 @@ import {
   IEmbeddingProducer,
 } from './infrastructure/embedding.producer';
 
+@Injectable()
 export class MemoryService {
   constructor(
     private model: any,
@@ -70,3 +71,5 @@ export class MemoryService {
     });
   }
 }
+
+export const MEMORY_SERVICE = Symbol('MEMORY_SERVICE');

@@ -5,8 +5,6 @@ import { ConversationController } from './api/conversation.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MemoryModule } from '../memory/memory.module';
 import { MESSAGE_REPOSITORY } from '../memory/infrastructure/message.repository';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Message } from '../memory/core/entities/message.entity';
 
 @Module({
   imports: [ConfigModule, MemoryModule],
