@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   IMemoryRepository,
   MEMORY_REPOSITORY,
@@ -14,11 +14,13 @@ import {
   EMBEDDING_PRODUCER,
   IEmbeddingProducer,
 } from './infrastructure/embedding.producer';
+import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { HumanMessage, SystemMessage } from 'langchain/schema';
+import { currentDate } from '../conversation/conversation.service';
 
 @Injectable()
-export class MemoryService {
+export class MemoryService implements IMemoryService {
   constructor(
-    private model: any,
     @Inject(MEMORY_REPOSITORY)
     private memoryRepository: IMemoryRepository,
     @Inject(QDRANT_CLIENT)
@@ -54,8 +56,9 @@ export class MemoryService {
 
     return newMemory;
   }
-  async restoreMemory(queryEmbedding): Promise<unknown> {
-    return await this.qdrantClient.search(MEMORIES, {
+  async restoreMemory(query: string): Promise<unknown> {
+    const queryEmbedding = await this.getEmebed(query);
+    const documentedMemories = await this.qdrantClient.search(MEMORIES, {
       vector: queryEmbedding,
       limit: 1,
       filter: {
@@ -69,7 +72,64 @@ export class MemoryService {
         ],
       },
     });
+    const rerankMemories = await this.rerank(query, documentedMemories);
+    return rerankMemories;
+  }
+  private async getEmebed(query: string): Promise<number[]> {
+    return await this.embeddingProducer.embedQuery(query);
+  }
+  private async rerank(query: string, documents: any) {
+    const model = new ChatOpenAI({
+      modelName: 'gpt-3.5-turbo-16k',
+      temperature: 0,
+      maxConcurrency: 15,
+    });
+    Logger.log('Reranking documents...');
+
+    const checks: any = [];
+    for (const [document] of documents) {
+      Logger.log('Checking document: ' + document.metadata.name);
+      checks.push({
+        uuid: document.metadata.uuid,
+        rank: model.call([
+          new SystemMessage(`Check if the following document is relevant to the user query: """${query}""" and may be helpful to answer the question / query. Return 0 if not relevant, 1 if relevant.
+
+                Facts:
+                - Current date and time: ${currentDate()}
+
+                Warning:
+                 - You're forced to return 0 or 1 and forbidden to return anything else under any circumstances.
+                 - Pay attention to the keywords from the query, mentioned links etc.
+
+                 Additional info:
+                 - Document title: ${document.metadata.name}
+
+                 Document content: ###${document.pageContent}###
+
+                 Query:
+                 `),
+          new HumanMessage(query + '### Is relevant (0 or 1):'),
+        ]),
+      });
+    }
+
+    const results = await Promise.all(checks.map((check: any) => check.rank));
+    const rankings = results.map((result, index) => {
+      return { uuid: checks[index].uuid, score: result.content };
+    });
+    Logger.log('Reranked documents.');
+    return documents.filter((document: any) =>
+      rankings.find(
+        (ranking) =>
+          ranking.uuid === document[0].metadata.uuid && ranking.score === '1',
+      ),
+    );
   }
 }
 
 export const MEMORY_SERVICE = Symbol('MEMORY_SERVICE');
+
+export interface IMemoryService {
+  restoreMemory(queryEmbedding): Promise<unknown>;
+  add(memoryInput: MemoryInput): Promise<Memory>;
+}

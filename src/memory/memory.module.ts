@@ -11,9 +11,14 @@ import {
 import { QDRANT_CLIENT, initVectorStore } from './infrastructure/qdrant.client';
 import { EMBEDDING_PRODUCER } from './infrastructure/embedding.producer';
 import { MEMORY_SERVICE, MemoryService } from './memory.service';
+import {
+  MEMORY_REPOSITORY,
+  MemorySqlRepository,
+} from './infrastructure/memory.repository';
+import { Memory } from './core/entities/memory.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message]), ConfigModule],
+  imports: [TypeOrmModule.forFeature([Message, Memory]), ConfigModule],
   providers: [
     {
       provide: MESSAGE_REPOSITORY,
@@ -32,6 +37,10 @@ import { MEMORY_SERVICE, MemoryService } from './memory.service';
       inject: [ConfigService],
     },
     {
+      provide: MEMORY_REPOSITORY,
+      useClass: MemorySqlRepository,
+    },
+    {
       provide: EMBEDDING_PRODUCER,
       useFactory: () => {
         return new OpenAIEmbeddings({ maxConcurrency: 5 });
@@ -42,6 +51,6 @@ import { MEMORY_SERVICE, MemoryService } from './memory.service';
       useClass: MemoryService,
     },
   ],
-  exports: [MESSAGE_REPOSITORY],
+  exports: [MESSAGE_REPOSITORY, MEMORY_SERVICE],
 })
 export class MemoryModule {}

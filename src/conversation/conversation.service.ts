@@ -10,6 +10,8 @@ import {
   IMessagesRepository,
   MESSAGE_REPOSITORY,
 } from '../memory/infrastructure/message.repository';
+import { IMemoryService, MEMORY_SERVICE } from '../memory/memory.service';
+import { ChatOpenAI } from 'langchain/chat_models/openai';
 
 @Injectable()
 export class ConversationService {
@@ -17,42 +19,25 @@ export class ConversationService {
     private model: any, // TODO drop it, model should be more flexiable
     @Inject(MESSAGE_REPOSITORY)
     private messageRepository: IMessagesRepository,
+    @Inject(MEMORY_SERVICE) private memoryService: IMemoryService,
   ) {}
-  async call(question: string): Promise<string> {
+  async call(
+    question: string,
+    conversation: any,
+    context: any,
+  ): Promise<unknown> {
     try {
+      context.memories = await this.memoryService.restoreMemory(question);
 
-      // embed query
-
-      // check the output
-
-      // call with messages 
-      const conversationContext = new SystemMessage(`
-        Hey, it's George here!
-
-        Here are my rules, straight from the horse's mouth:
-        - I'm allowed to use only the information I have in my memories, so when you ask me about something I don't know, I'll just say "I don't know" or "I don't remember."
-        - My memories are just in my head and I'm aware of that you may don't know what I know, so I'll try to explain things in a way that's easy to understand.
-        - I'm forbidden to use asteriks or any other special symbols in my speech.
-        - I'll keep my speech super concise and honest, sticking to the context given, all while maintaining top-notch grammar, just like a seasoned podcaster would.
-        - Whenever you hit me with an "Are you sure," I'll walk you through my thought process to confirm my answer, then double-check to see if my initial response was on the mark.
-        - When you ask about URL, I'll get it directly from my memories (usually it is written as markdown link, so I'll just read it out loud).
-        - I'll ditch most symbols and punctuation to make sure the text flows smoothly when read out loud.
-        - I'm all about keeping our chat natural, warm, and full of life, throwing in a bit of slang here and there for good measure.
-        - You won't catch me droning on about my limits by dropping lines like "I'm an AI" or "I'm not human."
-        - If something's not crystal clear to me, I'll be sure to ask for some extra info.
-        - I'm here to give you the nitty-gritty details and the exact format you need, just say the word.
-
-        Facts:
-        - Current date and time: ${currentDate()}
-
-        Let's keep this conversation rolling! 🚀
-        `);
-      Logger.log(conversationContext);
-      const { content: Conversation } = await this.model.call([
-        new SystemMessage(conversationContext),
-        new HumanMessage(question),
-      ]);
-      return Conversation;
+      Logger.log(context);
+      const messages = await this.formPrompt(question, conversation, context);
+      const modelSettings = {
+        modelName: 'gpt-4-1106-preview',
+        temperature: 0.7,
+      };
+      const chat = new ChatOpenAI(modelSettings);
+      const { content } = await chat.call(messages);
+      return content;
     } catch (err) {
       throw new BadRequestException(err, 'The OpenAI API Error');
     }
@@ -81,7 +66,7 @@ export class ConversationService {
       return [];
     }
   }
-  // TODO move to memoty service?
+
   async saveMessage(conversationId: string, query, answer) {
     try {
       const message = Message.create(conversationId, query, answer);
@@ -89,6 +74,57 @@ export class ConversationService {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  async formPrompt(query: string, conversation: any[], context?: any) {
+    let messages = [
+      new SystemMessage(`
+         Hey, it's George here!
+
+        Here are my rules, straight from the horse's mouth:
+        - I'm allowed to use only the information I have in my memories, so when you ask me about something I don't know, I'll just say "I don't know" or "I don't remember."
+        - My memories are just in my head and I'm aware of that you may don't know what I know, so I'll try to explain things in a way that's easy to understand.
+        - I'm forbidden to use asteriks or any other special symbols in my speech.
+        - I'll keep my speech super concise and honest, sticking to the context given, all while maintaining top-notch grammar, just like a seasoned podcaster would.
+        - Whenever you hit me with an "Are you sure," I'll walk you through my thought process to confirm my answer, then double-check to see if my initial response was on the mark.
+        - When you ask about URL, I'll get it directly from my memories (usually it is written as markdown link, so I'll just read it out loud).
+        - I'll ditch most symbols and punctuation to make sure the text flows smoothly when read out loud.
+        - I'm all about keeping our chat natural, warm, and full of life, throwing in a bit of slang here and there for good measure.
+        - You won't catch me droning on about my limits by dropping lines like "I'm an AI" or "I'm not human."
+        - If something's not crystal clear to me, I'll be sure to ask for some extra info.
+        - I'm here to give you the nitty-gritty details and the exact format you need, just say the word.
+
+        Facts:
+        - Current date and time: ${currentDate()}
+
+        Let's keep this conversation rolling! 🚀
+
+        ${
+          context && context.memories.length
+            ? `context (these are my memories, that may include details about me and you and what I've read about AI_devs course. For fragments that has name starting with CXXLXX I will keep in mind that "I" and "me" refer to the "overment" who is the author of this content).
+        ###${context.memories
+          .map(
+            (doc: any) =>
+              'Memory title: "' +
+              doc[0].metadata.name +
+              '" and its contents:' +
+              doc[0].pageContent,
+          )
+          .join('\n\n')}###`
+            : ''
+        }
+
+        Let's keep this conversation rolling! 🚀
+        `),
+    ];
+
+    if (conversation.length) {
+      messages = [...messages, ...conversation];
+    }
+
+    messages.push(new HumanMessage(query));
+
+    return messages;
   }
 }
 

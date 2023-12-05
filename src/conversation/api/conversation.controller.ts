@@ -26,7 +26,13 @@ export class ConversationController {
 
     Logger.log(`${conversation}`);
 
-    const result = await this.conversationService.call(question);
+    const context = { conversationId };
+
+    const result = await this.conversationService.call(
+      question,
+      conversation,
+      context,
+    );
 
     response.setHeader('x-conversation-id', conversationId);
 
@@ -37,7 +43,7 @@ export class ConversationController {
     );
     Logger.log(`The answer is: ${result}`);
 
-    return new OutputConversationDto(result, conversationId);
+    return new OutputConversationDto(result as string, conversationId);
   }
 }
 // TODO add github actions!

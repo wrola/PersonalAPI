@@ -5,6 +5,7 @@ import { ConversationController } from './api/conversation.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MemoryModule } from '../memory/memory.module';
 import { MESSAGE_REPOSITORY } from '../memory/infrastructure/message.repository';
+import { MEMORY_SERVICE } from '../memory/memory.service';
 
 @Module({
   imports: [ConfigModule, MemoryModule],
@@ -12,13 +13,13 @@ import { MESSAGE_REPOSITORY } from '../memory/infrastructure/message.repository'
   providers: [
     {
       provide: ConversationService,
-      useFactory: async (configService, messageRepository) => {
+      useFactory: async (configService, messageRepository, memoryService) => {
         const model = new ChatOpenAI({
           modelName: <string>configService.get('OPEN_MODEL'),
         });
-        return new ConversationService(model, messageRepository);
+        return new ConversationService(model, messageRepository, memoryService);
       },
-      inject: [ConfigService, MESSAGE_REPOSITORY],
+      inject: [ConfigService, MESSAGE_REPOSITORY, MEMORY_SERVICE],
     },
   ],
 })
