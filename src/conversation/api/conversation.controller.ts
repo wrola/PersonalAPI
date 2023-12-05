@@ -13,7 +13,7 @@ export class ConversationController {
     @Body() body: InputConversationDto,
     @Res() response: Response,
     @Headers('x-conversation-id') conversationId?: string,
-  ): Promise<OutputConversationDto> {
+  ): Promise<Response<OutputConversationDto>> {
     const { question } = body;
 
     Logger.log(`The question is: ${question}`);
@@ -43,7 +43,9 @@ export class ConversationController {
     );
     Logger.log(`The answer is: ${result}`);
 
-    return new OutputConversationDto(result as string, conversationId);
+    return response.json(
+      new OutputConversationDto(result as string, conversationId),
+    );
   }
 }
 // TODO add github actions!

@@ -1,6 +1,6 @@
 export class OutputConversationDto {
   constructor(
-    private question: string,
+    private answer: string,
     private conversationId: string,
   ) {}
 }
