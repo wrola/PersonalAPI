@@ -4,11 +4,13 @@ import { InputConversationDto } from './dto/input-conversation.dto';
 import { v4 } from 'uuid';
 import { OutputConversationDto } from './dto/output-conversation.dto';
 import { Response } from 'express';
+import { InputLearnDto } from './dto/input-learn.dto';
+import { OutputLearnDto } from './dto/output-learn.dto';
 
-@Controller('/talk')
+@Controller()
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
-  @Post()
+  @Post('/talk')
   async conversation(
     @Body() body: InputConversationDto,
     @Res() response: Response,
@@ -47,5 +49,13 @@ export class ConversationController {
       new OutputConversationDto(result as string, conversationId),
     );
   }
+
+  @Post('/learn')
+  async learn(
+    @Body() body: InputLearnDto,
+    @Res() response: Response,
+  ): Promise<Response<OutputLearnDto>> {
+    await console.log(body);
+    return response.json(new OutputLearnDto());
+  }
 }
-// TODO add github actions!

@@ -16,7 +16,6 @@ import { ChatOpenAI } from 'langchain/chat_models/openai';
 @Injectable()
 export class ConversationService {
   constructor(
-    private model: any, // TODO drop it, model should be more flexiable
     @Inject(MESSAGE_REPOSITORY)
     private messageRepository: IMessagesRepository,
     @Inject(MEMORY_SERVICE) private memoryService: IMemoryService,
@@ -101,7 +100,7 @@ export class ConversationService {
 
         ${
           context && context.memories.length
-            ? `context (these are my memories, that may include details about me and you and what I've read about AI_devs course. For fragments that has name starting with CXXLXX I will keep in mind that "I" and "me" refer to the "overment" who is the author of this content).
+            ? `context (these are my memories, that may include details about me and you.
         ###${context.memories
           .map(
             (doc: any) =>
