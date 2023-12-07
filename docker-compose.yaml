@@ -14,7 +14,6 @@ services:
     networks:
       - network
 
-
   qdrant_db:
     container_name: qdrant
     image: qdrant/qdrant:latest
@@ -41,6 +40,13 @@ services:
     networks:
       - network
 
+  watchtower:
+    image: containrrr/watchtower
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
 
 networks:
   network:
