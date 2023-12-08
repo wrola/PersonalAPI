@@ -5,7 +5,7 @@ services:
   api:
     container_name: api
     build: .
-    image: api
+    image: wrola0/personal-api:latest
     restart: unless-stopped
     ports:
       - '${PORT}:${PORT}'
@@ -42,10 +42,11 @@ services:
 
   watchtower:
     image: containrrr/watchtower
-    env_file:
-      - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - REPO_USER=${REPO_USER}
+      - REPO_PASS=${REPO_PASS}
     command: --interval 30
 
 networks:
