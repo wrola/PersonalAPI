@@ -11,6 +11,8 @@ services:
       - '${PORT}:${PORT}'
     env_file:
       - .env
+    labels:
+      - com.centurylinklabs.watchtower.lifecycle.post-update="npm run migration:run"
     networks:
       - network
 
@@ -37,6 +39,9 @@ services:
       - postgres:/data/postgres
     env_file:
       - .env
+    labels:
+      - com.centurylinklabs.watchtower.lifecycle.pre-update
+      - com.centurylinklabs.watchtower.monitor-only="true"
     networks:
       - network
 
