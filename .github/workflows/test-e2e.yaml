@@ -32,8 +32,9 @@ jobs:
           POSTGRES_USER: ${{env.POSTGRES_USER}}
           POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
           POSTGRES_HOST: ${{env.POSTGRES_HOST}}
+          POSTGRES_PORT:
         ports:
-          - 5433:5433
+          - 5433:5432
 
         # Set health checks to wait until postgres has started
         options: >-
