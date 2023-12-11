@@ -4,8 +4,8 @@ import { InputConversationDto } from './dto/input-conversation.dto';
 import { v4 } from 'uuid';
 import { OutputConversationDto } from './dto/output-conversation.dto';
 import { Response } from 'express';
-import { InputLearnDto } from './dto/input-learn.dto';
-import { OutputLearnDto } from './dto/output-learn.dto';
+import { InputLearnDto } from '../../skills/api/dto/input-learn.dto';
+import { OutputLearnDto } from '../../skills/api/dto/output-learn.dto';
 
 @Controller()
 export class ConversationController {
