@@ -33,7 +33,7 @@ jobs:
           POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
           POSTGRES_HOST: ${{env.POSTGRES_HOST}}
         ports:
-          - 5432:5432
+          - 5433:5433
 
         # Set health checks to wait until postgres has started
         options: >-
@@ -73,7 +73,7 @@ jobs:
           POSTGRES_USER: ${{env.POSTGRES_USER}}
           POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
           POSTGRES_HOST: ${{env.POSTGRES_HOST}}
-          POSTGRES_PORT: 5432
+          POSTGRES_PORT: 5433
 
       - name: Run e2e tests
         run: npm run test:e2e
