@@ -23,6 +23,7 @@ import { MemoryModule } from './memory/memory.module';
         <TypeOrmModuleOptions>{
           type: configService.get('DATABASE_TYPE'),
           host: configService.get('POSTGRES_HOST'),
+          port: 5433,
           username: configService.get('POSTGRES_USER'),
           password: configService.get('POSTGRES_PASSWORD'),
           entities: [Message, Memory],
