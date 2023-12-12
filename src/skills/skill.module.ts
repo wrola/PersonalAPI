@@ -1,21 +1,29 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   SKILL_HANDLER_FACTORY,
   SkillHandlerFactory,
 } from './core/skill.factory';
 import { MemoryModule } from '../memory/memory.module';
-import { AddMemoryHandler } from './core/handlers/add-memory.handler';
 import { MEMORY_SERVICE } from '../memory/memory.service';
 import {
   SKILLS_REPOSITORY,
   SkillsRepository,
 } from './infrastrucutre/skills.repository';
+import {
+  SKILLS_SEED_SERVICE,
+  SkillSeedService,
+} from './infrastrucutre/skills.seed';
+import { Skill } from './core/skill.entity';
 
-const HANDLERS = [AddMemoryHandler];
 
 @Module({
-  imports: [MemoryModule],
+  imports: [MemoryModule, TypeOrmModule.forFeature([Skill])],
   providers: [
+    {
+      provide: SKILLS_REPOSITORY,
+      useClass: SkillsRepository,
+    },
     {
       provide: SKILL_HANDLER_FACTORY,
       useFactory: (memoryService, skillRepository) => {
@@ -24,10 +32,15 @@ const HANDLERS = [AddMemoryHandler];
       inject: [MEMORY_SERVICE, SKILLS_REPOSITORY],
     },
     {
-      provide: SKILLS_REPOSITORY,
-      useClass: SkillsRepository,
+      provide: SKILLS_SEED_SERVICE,
+      useFactory: async (skillsRepository) => {
+        const skillSeed = new SkillSeedService(skillsRepository);
+        await skillSeed.initializeSkills();
+
+        return skillSeed;
+      },
+      inject: [SKILLS_REPOSITORY, MEMORY_SERVICE],
     },
-    ...HANDLERS,
   ],
   exports: [],
 })

@@ -12,14 +12,14 @@ export class Skill {
   @Column()
   description: string;
 
-  @Column({ type: 'jsonb' })
-  tags: string[];
+  @Column({ type: 'jsonb', nullable: true })
+  tags: string[] | null;
 
   @Column({ nullable: true })
-  webhook: string;
+  webhook: string | null;
 
   @Column({ type: 'jsonb', nullable: true })
-  schema: object;
+  schema: object | null;
 
   @CreateDateColumn()
   createdAt: Date;

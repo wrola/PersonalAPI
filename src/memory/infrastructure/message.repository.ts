@@ -17,12 +17,15 @@ export class MessagesSqlRepository implements IMessagesRepository {
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
   ) {}
+
   async exist(): Promise<boolean> {
     return await this.messageRepository.exist();
   }
+
   async save(message: Message): Promise<void> {
     await this.messageRepository.save(message);
   }
+
   async findLatest(conversationId: string): Promise<Message[]> {
     return await this.messageRepository.find({
       where: { conversationId },
