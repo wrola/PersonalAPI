@@ -3,6 +3,15 @@
 
 This a personal API, build for personal usage.
 
+## Abilities
+
+| Skill     | Name                | State                     | Description                                                        |
+| ----------| ------------------- | ------------------------- | ------------------------------------------------------------------ |
+| talk      | Chat                | Working                   | Ability to ask for knowledge                                       |
+| learn     | Learn               | In-progress               | Ability to learn new skills                                        |
+| memory    | Memories            | In-progress               | Ability to find to look over stored memories                       |
+
+
 ## Installation
 copy env and add your own OPENAI key to have application be fully operational
 ```bash
@@ -58,12 +67,3 @@ docker run -p 5433:5433 -v $(pwd)/postgres:/data/postgres postgres:latest
 ## Resources
 
 - [Prompts examples when working with dates](https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/guides/prompts-applications.md)
-
-## Abilities
-
-| Skill     | Name                | State                     | Description                                                        |
-| ----------| ------------------- | ------------------------- | ------------------------------------------------------------------ |
-| talk      | Chat                | Working                   | Ability to ask for knowledge                                       |
-| learn     | Learn               | In-progress               | Ability to learn new skills                                        |
-| memory    | Memories            | In-progress               | Ability to find to look over stored memories                       |
-
