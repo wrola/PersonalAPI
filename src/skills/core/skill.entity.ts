@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryColumn,
+} from 'typeorm';
 import { v4 } from 'uuid';
 
 @Entity('skills')
@@ -6,6 +12,7 @@ export class Skill {
   @PrimaryColumn({ type: 'uuid' })
   id: string;
 
+  @Index({ unique: true })
   @Column({ nullable: false })
   name: string;
 

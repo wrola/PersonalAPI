@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { ISkillsRepository } from './skills.repository';
 import { Skill } from '../core/skill.entity';
-import { Skills } from '../core/skills';
+import { Skills, SkillsDescription } from '../core/skills';
 import { AddSkillHandler } from '../core/handlers/add-skill.handler';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -34,7 +34,7 @@ export class SkillSeedService {
   async addInitialSkills() {
     const mappedSkills = Object.values(Skills).map((skill) => ({
       name: skill,
-      description: skill,
+      description: SkillsDescription[skill],
     }));
 
     return Promise.all(

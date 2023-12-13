@@ -16,7 +16,6 @@ import {
 } from './infrastrucutre/skills.seed';
 import { Skill } from './core/skill.entity';
 
-
 @Module({
   imports: [MemoryModule, TypeOrmModule.forFeature([Skill])],
   providers: [

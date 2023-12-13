@@ -19,7 +19,7 @@
       "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
       "test:e2e": "jest --config ./test/jest-e2e.json --detectOpenHandles",
       "migration:generate": "npm run build && npx typeorm-ts-node-commonjs migration:generate --dataSource dist/data-source.js ",
-      "migration:run": "npx typeorm-ts-node-commonjs migration:run --dataSource dist/data-source.js",
+      "migration:run": "npm run build && npx typeorm-ts-node-commonjs migration:run --dataSource dist/data-source.js",
       "migration:revert": "npx typeorm-ts-node-commonjs migration:revert --dataSource dist/data-source.js"
    },
    "dependencies": {
