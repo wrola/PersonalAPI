@@ -59,10 +59,10 @@ docker run -p 5433:5433 -v $(pwd)/postgres:/data/postgres postgres:latest
 
 - [Prompts examples when working with dates](https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/guides/prompts-applications.md)
 
-## Ability
+## Abilities
 
 | Skill     | Name                | State                     | Description                                                        |
-| ----------| ----------------------------------------------- | ------------------------------------------------------------------ |
+| ----------| ------------------- | ------------------------- | ------------------------------------------------------------------ |
 | talk      | Chat                | Working                   | Ability to ask for knowledge                                       |
 | learn     | Learn               | In-progress               | Ability to learn new skills                                        |
 | memory    | Memories            | In-progress               | Ability to find to look over stored memories                       |
