@@ -1,7 +1,13 @@
 
 ## Description
 
-This a personal API, build for personal usage.
+Welcome to the RAG (Retrieval-Augmented Generation) Repository as Personal-API, an AI project that leverages the OpenAI API for generating responses and integrates PostgreSQL for robust long-term data storage. 
+With the addition of Qdrant for high-performance vector similarity search, this repository is designed to provide highly relevant and context-aware AI responses. 
+## Features - **OpenAI API Integration**: Harness the power of GPT-4 for state-of-the-art natural language processing and text generation.
+- **PostgreSQL Database**: Ensure reliable data persistence with a robust and scalable database solution for storing conversational contexts and metadata.
+- **Qdrant Vector Search**: Implement efficient vector similarity searches to retrieve the most relevant data for AI responses.
+- **TypeScript**: Benefit from strong typing and object-oriented programming for maintainable and scalable codebase.
+- **Langchain Library**: Utilize this library to bridge language models with various applications, enhancing the capabilities of our RAG system. 
 
 ## Abilities
 
