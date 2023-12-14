@@ -32,7 +32,7 @@ export class SkillHandlerFactory implements ISkillHandlerFactory {
   }
 }
 
-interface ISkillHandlerFactory {
+export interface ISkillHandlerFactory {
   create(payload): SkillHandler;
 }
 

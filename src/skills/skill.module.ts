@@ -15,6 +15,7 @@ import {
   SkillSeedService,
 } from './infrastrucutre/skills.seed';
 import { Skill } from './core/skill.entity';
+import { SkillsController } from './api/skills.controller';
 
 @Module({
   imports: [MemoryModule, TypeOrmModule.forFeature([Skill])],
@@ -41,6 +42,7 @@ import { Skill } from './core/skill.entity';
       inject: [SKILLS_REPOSITORY, MEMORY_SERVICE],
     },
   ],
+  controllers: [SkillsController],
   exports: [],
 })
 export class SkillModule {}

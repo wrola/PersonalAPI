@@ -12,8 +12,8 @@ export class Memory {
   @Column({ type: 'text' })
   content: string;
 
-  @Column({ type: 'text' })
-  reflection: string;
+  @Column({ type: 'text', nullable: true })
+  reflection: string | null;
 
   @Column({ type: 'jsonb' })
   tags: Array<string>;
@@ -31,7 +31,7 @@ export class Memory {
     memory.source = memoryInput.source;
     memory.tags = memoryInput.tags;
     memory.active = true;
-
+    if (memoryInput.reflection) memory.reflection = memoryInput.reflection;
     return memory;
   }
 }
@@ -40,4 +40,5 @@ export type MemoryInput = {
   content: string;
   source: string;
   tags: Array<string>;
+  reflection?: string;
 };
