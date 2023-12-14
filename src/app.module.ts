@@ -26,7 +26,7 @@ import { Skill } from './skills/core/skill.entity';
         <TypeOrmModuleOptions>{
           type: configService.get('DATABASE_TYPE'),
           host: configService.get('POSTGRES_HOST'),
-          port: 5433,
+          port: configService.get('POSTGRES_PORT'),
           username: configService.get('POSTGRES_USER'),
           password: configService.get('POSTGRES_PASSWORD'),
           entities: [Message, Memory, Skill],

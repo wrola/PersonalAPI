@@ -12,7 +12,6 @@ export const dataSource = new DataSource({
   port: 5433,
   username: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD || 'test',
-  synchronize: false,
   entities: [Memory, Message, Skill],
   migrations: ['dist/migration/*.js'],
 });

@@ -8,6 +8,7 @@ env:
   POSTGRES_HOST: localhost
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: test
+  POSTGRES_PORT: 5433
   OPENAI_API_KEY: sk-0A
   API_KEYS: '["wrt42Ri4"]'
   QDRANT_URL: http://localhost:6333
@@ -32,7 +33,6 @@ jobs:
           POSTGRES_USER: ${{env.POSTGRES_USER}}
           POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
           POSTGRES_HOST: ${{env.POSTGRES_HOST}}
-          POSTGRES_PORT:
         ports:
           - 5433:5432
 
