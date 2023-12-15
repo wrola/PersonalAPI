@@ -40,7 +40,7 @@ services:
     env_file:
       - .env
     labels:
-      - com.centurylinklabs.watchtower.monitor-only='true'
+      - com.centurylinklabs.watchtower.monitor-only=true
     networks:
       - network
 

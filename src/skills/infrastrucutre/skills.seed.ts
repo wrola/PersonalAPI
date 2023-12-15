@@ -12,7 +12,12 @@ export class SkillSeedService {
   constructor(@InjectRepository(Skill) private repository: ISkillsRepository) {}
 
   async initializeSkills() {
-    const existingSkills = await this.repository.find({});
+    let existingSkills;
+    try {
+      existingSkills = await this.repository.find({});
+    } catch (err) {
+      return;
+    }
 
     if (this.areAllInitialSkillsAvailable(existingSkills)) {
       return;
