@@ -51,6 +51,6 @@ import { Memory } from './core/entities/memory.entity';
       useClass: MemoryService,
     },
   ],
-  exports: [MESSAGE_REPOSITORY, MEMORY_SERVICE],
+  exports: [MESSAGE_REPOSITORY, MEMORY_SERVICE, QDRANT_CLIENT],
 })
 export class MemoryModule {}

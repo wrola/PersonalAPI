@@ -16,6 +16,8 @@ import {
 } from './infrastrucutre/skills.seed';
 import { Skill } from './core/skill.entity';
 import { SkillsController } from './api/skills.controller';
+import { QDRANT_CLIENT } from '../memory/infrastructure/qdrant.client';
+import { QdrantClient } from '@qdrant/js-client-rest';
 
 @Module({
   imports: [MemoryModule, TypeOrmModule.forFeature([Skill])],
@@ -26,20 +28,24 @@ import { SkillsController } from './api/skills.controller';
     },
     {
       provide: SKILL_HANDLER_FACTORY,
-      useFactory: (memoryService, skillRepository) => {
-        return new SkillHandlerFactory(memoryService, skillRepository);
+      useFactory: (memoryService, skillRepository, qdrantClient) => {
+        return new SkillHandlerFactory(
+          memoryService,
+          skillRepository,
+          qdrantClient,
+        );
       },
-      inject: [MEMORY_SERVICE, SKILLS_REPOSITORY],
+      inject: [MEMORY_SERVICE, SKILLS_REPOSITORY, QDRANT_CLIENT],
     },
     {
       provide: SKILLS_SEED_SERVICE,
-      useFactory: async (skillsRepository) => {
-        const skillSeed = new SkillSeedService(skillsRepository);
+      useFactory: async (skillsRepository, qdrantClient) => {
+        const skillSeed = new SkillSeedService(skillsRepository, qdrantClient);
         await skillSeed.initializeSkills();
 
         return skillSeed;
       },
-      inject: [SKILLS_REPOSITORY, MEMORY_SERVICE],
+      inject: [SKILLS_REPOSITORY, MEMORY_SERVICE, QDRANT_CLIENT],
     },
   ],
   controllers: [SkillsController],

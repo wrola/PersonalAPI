@@ -9,11 +9,16 @@ import {
   ISkillsRepository,
   SKILLS_REPOSITORY,
 } from '../infrastrucutre/skills.repository';
+import {
+  IQdrantClient,
+  QDRANT_CLIENT,
+} from '../../memory/infrastructure/qdrant.client';
 
 export class SkillHandlerFactory implements ISkillHandlerFactory {
   constructor(
     @Inject(MEMORY_SERVICE) private memoryService: IMemoryService,
     @Inject(SKILLS_REPOSITORY) private skillRepository: ISkillsRepository,
+    @Inject(QDRANT_CLIENT) private qdrantClient: IQdrantClient,
   ) {}
   create(payload: Record<string, unknown>): SkillHandler {
     const { type } = payload;
@@ -25,7 +30,11 @@ export class SkillHandlerFactory implements ISkillHandlerFactory {
           this.memoryService,
         );
       case Skills.LEARNING:
-        return new AddSkillHandler(payload, this.skillRepository);
+        return new AddSkillHandler(
+          payload,
+          this.skillRepository,
+          this.qdrantClient,
+        );
       default:
         throw new InternalServerErrorException('Skill not exists');
     }

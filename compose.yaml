@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
 
   api:
@@ -13,6 +11,9 @@ services:
       - .env
     labels:
       - com.centurylinklabs.watchtower.lifecycle.post-update="npm run migration:run"
+    depends_on:
+      - postgres_db
+      - qdrant_db
     networks:
       - network
 
@@ -43,9 +44,9 @@ services:
       - com.centurylinklabs.watchtower.monitor-only=true
     networks:
       - network
-
+##why is not in the same network after pulling nwe image?
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
