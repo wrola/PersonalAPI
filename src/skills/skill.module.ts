@@ -17,7 +17,6 @@ import {
 import { Skill } from './core/skill.entity';
 import { SkillsController } from './api/skills.controller';
 import { QDRANT_CLIENT } from '../memory/infrastructure/qdrant.client';
-import { QdrantClient } from '@qdrant/js-client-rest';
 
 @Module({
   imports: [MemoryModule, TypeOrmModule.forFeature([Skill])],
@@ -28,14 +27,7 @@ import { QdrantClient } from '@qdrant/js-client-rest';
     },
     {
       provide: SKILL_HANDLER_FACTORY,
-      useFactory: (memoryService, skillRepository, qdrantClient) => {
-        return new SkillHandlerFactory(
-          memoryService,
-          skillRepository,
-          qdrantClient,
-        );
-      },
-      inject: [MEMORY_SERVICE, SKILLS_REPOSITORY, QDRANT_CLIENT],
+      useClass: SkillHandlerFactory,
     },
     {
       provide: SKILLS_SEED_SERVICE,
