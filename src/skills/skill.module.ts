@@ -37,7 +37,7 @@ import { QDRANT_CLIENT } from '../memory/infrastructure/qdrant.client';
 
         return skillSeed;
       },
-      inject: [SKILLS_REPOSITORY, MEMORY_SERVICE, QDRANT_CLIENT],
+      inject: [SKILLS_REPOSITORY, QDRANT_CLIENT],
     },
   ],
   controllers: [SkillsController],

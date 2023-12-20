@@ -19,7 +19,7 @@ export class AddSkillHandler implements SkillHandler {
     @Inject(QDRANT_CLIENT) readonly qdrantClient: IQdrantClient,
   ) {}
   async execute(): Promise<void> {
-    const { name, description, synced } = this.payload;
+    const { name, description, synced = false } = this.payload;
     const skill = Skill.create(
       name,
       description,

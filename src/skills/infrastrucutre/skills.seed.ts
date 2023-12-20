@@ -47,7 +47,9 @@ export class SkillSeedService {
     const mappedSkills = Object.values(Skills).map((skill) => ({
       name: skill,
       description: SkillsDescription[skill],
+      synced: true,
     }));
+    console.log(this.qdrantClient);
 
     return Promise.all(
       mappedSkills.map(async (skillProps) => {
