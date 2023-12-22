@@ -5,7 +5,6 @@ import {
   SkillHandlerFactory,
 } from './core/skill.factory';
 import { MemoryModule } from '../memory/memory.module';
-import { MEMORY_SERVICE } from '../memory/memory.service';
 import {
   SKILLS_REPOSITORY,
   SkillsRepository,

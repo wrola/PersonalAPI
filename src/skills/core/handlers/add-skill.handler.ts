@@ -14,7 +14,7 @@ import { Document } from 'langchain/document';
 
 export class AddSkillHandler implements SkillHandler {
   constructor(
-    readonly payload: Record<string, unknown>, 
+    readonly payload: Record<string, unknown>,
     @Inject(SKILLS_REPOSITORY) readonly skillRepository: ISkillsRepository,
     @Inject(QDRANT_CLIENT) readonly qdrantClient: IQdrantClient,
   ) {}
