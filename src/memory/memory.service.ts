@@ -125,6 +125,30 @@ export class MemoryService implements IMemoryService {
       ),
     );
   }
+  async plan(query: string, actions: any[], context: any[]): Promise<string> {
+    const model = new ChatOpenAI({
+      modelName: 'gpt-4-1106-preview',
+      temperature: 0,
+      maxConcurrency: 1,
+    });
+
+    const { content: uuid } = await model.call([
+      new SystemMessage(`As Alice, you need to pick a single action that is the most relevant to the user's query and context below. Your only job is to return UUID of this action and nothing else.
+        conversation context###${context
+          .map((doc) => doc[0].pageContent)
+          .join('\n\n')}###
+        available actions###${actions
+          .map(
+            (action) =>
+              `(${action[0].metadata.uuid}) + ${action[0].pageContent}`,
+          )
+          .join('\n\n')}###
+        `),
+      new HumanMessage(query + '### Pick an action (UUID): '),
+    ]);
+
+    return uuid as string;
+  }
 }
 
 export const MEMORY_SERVICE = Symbol('MEMORY_SERVICE');
@@ -132,4 +156,5 @@ export const MEMORY_SERVICE = Symbol('MEMORY_SERVICE');
 export interface IMemoryService {
   restoreMemory(queryEmbedding): Promise<unknown>;
   add(memoryInput: MemoryInput): Promise<Memory>;
+  plan(query: string, actions: any[], context: unknown): Promise<string>;
 }
