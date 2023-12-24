@@ -4,13 +4,11 @@ services:
     container_name: api
     build: .
     image: wrola0/personal-api:latest
-    restart: unless-stopped
+    restart: always
     ports:
       - '${PORT}:${PORT}'
     env_file:
       - .env
-    labels:
-      - com.centurylinklabs.watchtower.lifecycle.post-update="npm run migration:run"
     depends_on:
       - postgres_db
       - qdrant_db
@@ -44,7 +42,7 @@ services:
       - com.centurylinklabs.watchtower.monitor-only=true
     networks:
       - network
-##why is not in the same network after pulling nwe image?
+
   watchtower:
     image: containrrr/watchtower:latest
     volumes:
@@ -52,6 +50,8 @@ services:
     environment:
       - REPO_USER=${REPO_USER}
       - REPO_PASS=${REPO_PASS}
+    networks:
+      - network
     command: --interval 30
 
 networks:
