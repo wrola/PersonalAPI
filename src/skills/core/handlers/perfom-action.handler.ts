@@ -11,7 +11,11 @@ import {
 } from '../../infrastrucutre/skills.repository';
 import { SkillHandler } from './skill.handler';
 import { Inject, Logger } from '@nestjs/common';
-import { HumanMessage, SystemMessage } from 'langchain/schema';
+import {
+  BaseMessageChunk,
+  HumanMessage,
+  SystemMessage,
+} from 'langchain/schema';
 import { currentDate } from '../../../conversation/conversation.service';
 
 export class PerformAction implements SkillHandler {
@@ -44,17 +48,17 @@ export class PerformAction implements SkillHandler {
       context as any,
     );
 
-    const action = await this.skillsRepository.findOne(uuid);
+    const skill = await this.skillsRepository.findOne(uuid);
 
-    if (!action) {
+    if (!skill) {
       Logger.error('No such action', `The action uuid not exists: ${uuid}`);
     }
 
-    Logger.log(`Action found, the skill selected: ${action.name}`);
+    Logger.log(`Action found, the skill selected: ${skill.name}`);
 
     const messages = [
       new SystemMessage(`As Alice execute the following action: """${
-        action.name
+        skill.name
       }""" based on what user asks and context below.
         context###${(context as any)
           .map((doc: any) => doc[0].pageContent)
@@ -64,18 +68,46 @@ export class PerformAction implements SkillHandler {
         - Current date and time: ${currentDate()}`),
       new HumanMessage(query as string),
     ];
-
     const chat = new ChatOpenAI({
       modelName: 'gpt-4-1106-preview',
       temperature: 0.7,
     });
+    if (skill.schema) {
+      chat.bind({
+        functions: [skill.schema],
+        function_call: { name: skill.name } || undefined,
+      });
+    }
 
-    // const { content } = await chat.call(messages).bind({
-    //   functions: [...action.schema],
-    //   function_call: { name: actions.defaultSchema } || undefined,
-    // });
-    // return {
-    //   content,
-    // };
+    const content = await chat.invoke(messages);
+    const result = this._parseFunctionCall(content);
+    try {
+      const response = await fetch(skill.webhook, {
+        method: 'POST',
+        body: JSON.stringify(result.args),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      Logger.log({ action: skill.name, data: response.json() });
+    } catch {
+      Logger.error({
+        action: skill.name,
+        data: 'Remote action failed.',
+        status: 'error',
+      });
+    }
   }
+
+  private _parseFunctionCall = (
+    result: BaseMessageChunk,
+  ): { name: string; args: any } | null => {
+    if (result?.additional_kwargs?.function_call === undefined) {
+      return null;
+    }
+
+    return {
+      name: result.additional_kwargs.function_call.name,
+      args: JSON.parse(result.additional_kwargs.function_call.arguments),
+    };
+  };
 }

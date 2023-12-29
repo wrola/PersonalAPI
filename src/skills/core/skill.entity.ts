@@ -26,7 +26,7 @@ export class Skill {
   webhook: string | null;
 
   @Column({ type: 'jsonb', nullable: true })
-  schema: object | null;
+  schema: SchemaSkill | null;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -43,4 +43,10 @@ export class Skill {
 
     return skill;
   }
+}
+
+interface SchemaSkill {
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
 }
