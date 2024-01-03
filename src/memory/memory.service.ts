@@ -36,12 +36,15 @@ export class MemoryService implements IMemoryService {
         uuid: newMemory.id,
       },
     });
+
     const [embedding] = await this.embeddingProducer.embedDocuments([
       documentedMemory.pageContent,
     ]);
+
     if (!embedding) {
       return;
     }
+
     await Promise.all([
       this.memoryRepository.save(newMemory),
       this.qdrantClient.upsert(MEMORIES, {

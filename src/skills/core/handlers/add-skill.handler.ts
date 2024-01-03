@@ -27,7 +27,7 @@ export class AddSkillHandler implements SkillHandler {
       this.payload?.tags,
       this.payload?.schema,
     );
-    this.skillRepository.save(skill);
+    await this.skillRepository.save(skill);
 
     if (!synced) {
       const documentedMemory = new Document({

@@ -20,11 +20,11 @@ import { currentDate } from '../../../conversation/conversation.service';
 
 export class PerformAction implements SkillHandler {
   constructor(
+    readonly payload: Record<string, unknown>,
     @Inject(QDRANT_CLIENT) private qdrantClient: IQdrantClient,
     @Inject(SKILLS_REPOSITORY) private skillsRepository: ISkillsRepository,
     @Inject(MEMORY_SERVICE) private memoryService: IMemoryService,
   ) {}
-  payload: Record<string, unknown>;
   async execute(): Promise<void> {
     const { embedding, query, context } = this.payload;
     const actions = await this.qdrantClient.search(ACTIONS, {
@@ -68,10 +68,12 @@ export class PerformAction implements SkillHandler {
         - Current date and time: ${currentDate()}`),
       new HumanMessage(query as string),
     ];
+
     const chat = new ChatOpenAI({
       modelName: 'gpt-4-1106-preview',
       temperature: 0.7,
     });
+
     if (skill.schema) {
       chat.bind({
         functions: [skill.schema],
@@ -81,21 +83,30 @@ export class PerformAction implements SkillHandler {
 
     const content = await chat.invoke(messages);
     const result = this._parseFunctionCall(content);
-    try {
-      const response = await fetch(skill.webhook, {
-        method: 'POST',
-        body: JSON.stringify(result.args),
-        headers: { 'Content-Type': 'application/json' },
-      });
 
-      Logger.log({ action: skill.name, data: response.json() });
-    } catch {
-      Logger.error({
-        action: skill.name,
-        data: 'Remote action failed.',
-        status: 'error',
-      });
+    if (skill.webhook && result.args) {
+      try {
+        const response = await fetch(skill.webhook, {
+          method: 'POST',
+          body: JSON.stringify(result.args),
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        Logger.log({ action: skill.name, data: response.json() });
+      } catch {
+        Logger.error({
+          action: skill.name,
+          data: 'Remote action failed.',
+          status: 'error',
+        });
+      }
     }
+
+    Logger.log({
+      action: skill.name,
+      data: 'Memory added',
+      status: 'success',
+    });
   }
 
   private _parseFunctionCall = (
