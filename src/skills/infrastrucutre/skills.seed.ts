@@ -1,4 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { In } from 'typeorm';
 import { ISkillsRepository } from './skills.repository';
 import { Skill } from '../core/skill.entity';
 import { Skills, SkillsDescription } from '../core/skills';
@@ -8,6 +9,7 @@ import {
   IQdrantClient,
   QDRANT_CLIENT,
 } from '../../memory/infrastructure/qdrant.client';
+import { learnSchema } from '../core/schemas/learn-schema';
 
 export const SKILLS_SEED_SERVICE = Symbol('SKILLS_SEED_SERVICE');
 
@@ -19,14 +21,7 @@ export class SkillSeedService {
   ) {}
 
   async initializeSkills() {
-    let existingSkills;
-    try {
-      existingSkills = await this.repository.find({});
-    } catch (err) {
-      return;
-    }
-
-    if (this.areAllInitialSkillsAvailable(existingSkills)) {
+    if (this.areAllInitialSkillsAvailable()) {
       return;
     }
 
@@ -34,26 +29,35 @@ export class SkillSeedService {
     Logger.log('Added Initial Skillset');
   }
 
-  areAllInitialSkillsAvailable(skills: Array<Skill>) {
+  async areAllInitialSkillsAvailable() {
+    const initSkills = await this.repository.find({
+      where: { name: In(Object.values(Skills)) },
+    });
+
     return (
-      skills.length > 0 &&
-      skills.every((skill) =>
-        Object.values(Skills).includes(skill.name as Skills),
-      )
+      initSkills.length > 0 &&
+      Object.values(Skills).length === initSkills.length
     );
   }
 
   async addInitialSkills() {
-    const mappedSkills = Object.values(Skills).map((skill) => ({
-      name: skill,
-      description: SkillsDescription[skill],
-      synced: true,
-    }));
-
     return Promise.all(
-      mappedSkills.map(async (skillProps) => {
+      [
+        {
+          name: Skills.LEARNING,
+          description: SkillsDescription.LEARNING,
+          tags: ['memorize', 'memory', 'remember', 'skill'],
+          webhook: 'http://localhost:3000/learn',
+          schema: learnSchema,
+        },
+        {
+          name: Skills.MEMORY,
+          description: SkillsDescription.MEMORY,
+          tags: ['memorize', 'memory', 'remember'],
+        },
+      ].map(async (skill) => {
         const addSkill = new AddSkillHandler(
-          skillProps,
+          skill,
           this.repository,
           this.qdrantClient,
         );
