@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { SkillHandler } from './skill.handler';
 import {
   SKILLS_REPOSITORY,
@@ -19,6 +19,7 @@ export class AddSkillHandler implements SkillHandler {
     @Inject(QDRANT_CLIENT) readonly qdrantClient: IQdrantClient,
   ) {}
   async execute(): Promise<void> {
+    Logger.log(this.payload);
     const { name, description, synced = false } = this.payload;
     const skill = Skill.create(
       name,
@@ -27,6 +28,7 @@ export class AddSkillHandler implements SkillHandler {
       this.payload?.tags,
       this.payload?.schema,
     );
+    Logger.log(skill);
     await this.skillRepository.save(skill);
 
     if (!synced) {

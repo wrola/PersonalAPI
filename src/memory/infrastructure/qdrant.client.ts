@@ -28,12 +28,14 @@ export const initVectorStore = async (qdrant) => {
       await qdrant.createCollection(MEMORIES, {
         vectors: { size: 1536, distance: 'Cosine', on_disk: true },
       });
+      Logger.log('Memories are initialize');
     }
 
     if (!ACTIONS) {
       await qdrant.createCollection(ACTIONS, {
         vectors: { size: 1536, distance: 'Cosine', on_disk: true },
       });
+      Logger.log('Actions are initialize');
     }
 
     Logger.log('Qdrant initialize');

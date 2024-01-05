@@ -34,34 +34,34 @@ export class SkillSeedService {
       where: { name: In(Object.values(Skills)) },
     });
 
-    return (
-      initSkills.length > 0 &&
-      Object.values(Skills).length === initSkills.length
-    );
+    return Object.values(Skills).length === initSkills.length;
   }
 
   async addInitialSkills() {
     return Promise.all(
       [
-        {
-          name: Skills.LEARNING,
-          description: SkillsDescription.LEARNING,
-          tags: ['memorize', 'memory', 'remember', 'skill'],
-          webhook: 'http://localhost:3000/learn',
-          schema: learnSchema,
-        },
-        {
-          name: Skills.MEMORY,
-          description: SkillsDescription.MEMORY,
-          tags: ['memorize', 'memory', 'remember'],
-        },
-      ].map(async (skill) => {
-        const addSkill = new AddSkillHandler(
-          skill,
+        new AddSkillHandler(
+          {
+            name: Skills.LEARNING,
+            description: SkillsDescription.LEARNING,
+            tags: ['memorize', 'memory', 'remember', 'skill'],
+            webhook: 'http://localhost:3000/learn',
+            schema: learnSchema,
+          },
           this.repository,
           this.qdrantClient,
-        );
-        await addSkill.execute();
+        ),
+        new AddSkillHandler(
+          {
+            name: Skills.MEMORY,
+            description: SkillsDescription.MEMORY,
+            tags: ['memorize', 'memory', 'remember'],
+          },
+          this.repository,
+          this.qdrantClient,
+        ),
+      ].map(async (skill) => {
+        await skill.execute();
       }),
     );
   }
