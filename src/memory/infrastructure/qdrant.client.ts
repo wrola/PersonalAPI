@@ -20,26 +20,28 @@ export interface IQdrantClient {
 export const initVectorStore = async (qdrant) => {
   try {
     const result = await qdrant.getCollections();
-    const [MEMORIES, ACTIONS] = result.collections.filter((collection) =>
-      collection.name.includes(MEMORIES || ACTIONS),
+    const [memories, actions] = result.collections.filter(
+      (collection) =>
+        collection.name === MEMORIES || collection.name === ACTIONS,
     );
 
-    if (!MEMORIES) {
+    if (!memories) {
+      Logger.log('No memories Honey, creating place for memories', 'SKILLS');
       await qdrant.createCollection(MEMORIES, {
         vectors: { size: 1536, distance: 'Cosine', on_disk: true },
       });
-      Logger.log('Memories are initialize');
+      Logger.log('Memories are initialize', 'SKILLS');
     }
-
-    if (!ACTIONS) {
+    if (!actions) {
+      Logger.log('I cant do shit, no space for actions', 'SKILLS');
       await qdrant.createCollection(ACTIONS, {
         vectors: { size: 1536, distance: 'Cosine', on_disk: true },
       });
-      Logger.log('Actions are initialize');
+      Logger.log('I am not longer handicapped', 'SKILLS');
     }
 
-    Logger.log('Qdrant initialize');
+    Logger.log('Ready for settting up initial skills', 'SKILLS');
   } catch (err) {
-    Logger.error('During qdrant initialization' + err);
+    Logger.error(`During qdrant initialization + ${err}`, 'SKILLS');
   }
 };

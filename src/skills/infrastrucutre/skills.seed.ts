@@ -21,19 +21,18 @@ export class SkillSeedService {
   ) {}
 
   async initializeSkills() {
-    if (this.areAllInitialSkillsAvailable()) {
+    Logger.log(this.areInitialSkillsAvailable());
+    if (await this.areInitialSkillsAvailable()) {
       return;
     }
-
+    Logger.log('Start adding initila skills', 'SKILLS');
     await this.addInitialSkills();
-    Logger.log('Added Initial Skillset');
   }
 
-  async areAllInitialSkillsAvailable() {
+  async areInitialSkillsAvailable() {
     const initSkills = await this.repository.find({
       where: { name: In(Object.values(Skills)) },
     });
-
     return Object.values(Skills).length === initSkills.length;
   }
 
@@ -61,6 +60,7 @@ export class SkillSeedService {
           this.qdrantClient,
         ),
       ].map(async (skill) => {
+        Logger.log(skill, 'SKILLS');
         await skill.execute();
       }),
     );
