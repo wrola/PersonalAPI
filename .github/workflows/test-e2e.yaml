@@ -9,7 +9,7 @@ env:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: test
   POSTGRES_PORT: 5433
-  OPENAI_API_KEY: sk-0A
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
   API_KEYS: '["wrt42Ri4"]'
   QDRANT_URL: http://localhost:6333
 
