@@ -11,6 +11,7 @@ import {
   QDRANT_CLIENT,
 } from '../../../memory/infrastructure/qdrant.client';
 import { Document } from 'langchain/document';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 
 export class AddSkillHandler implements SkillHandler {
   constructor(
@@ -19,7 +20,6 @@ export class AddSkillHandler implements SkillHandler {
     @Inject(QDRANT_CLIENT) readonly qdrantClient: IQdrantClient,
   ) {}
   async execute(): Promise<void> {
-    Logger.log(this.payload);
     const { name, description, synced = false } = this.payload;
     const skill = Skill.create(
       name,
@@ -28,25 +28,34 @@ export class AddSkillHandler implements SkillHandler {
       this.payload?.tags,
       this.payload?.schema,
     );
-    Logger.log(skill);
     await this.skillRepository.save(skill);
 
     if (!synced) {
+      const embeddings = new OpenAIEmbeddings({ maxConcurrency: 5 });
+      const [embedding] = await embeddings.embedDocuments([
+        skill.name + ': ' + skill.description,
+      ]);
       const documentedMemory = new Document({
         pageContent: skill.name + ': ' + skill.description,
         metadata: {
           uuid: skill.id,
           name: skill.name,
+          vector: embedding,
         },
       });
-
-      await this.qdrantClient.upsert(ACTIONS, {
-        wait: true,
-        batch: {
-          ids: [documentedMemory.metadata.uuid],
-          payloads: [documentedMemory.metadata],
-        },
-      });
+      try {
+        await this.qdrantClient.upsert(ACTIONS, {
+          wait: true,
+          batch: {
+            ids: [documentedMemory.metadata.uuid],
+            payloads: [documentedMemory.metadata],
+            vectors: [documentedMemory.metadata.vector],
+          },
+        });
+        Logger.log('The skill added to qdrant', 'SKILLS');
+      } catch (err) {
+        Logger.error(err, 'SKILLS');
+      }
     }
   }
 }

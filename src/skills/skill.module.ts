@@ -9,10 +9,7 @@ import {
   SKILLS_REPOSITORY,
   SkillsRepository,
 } from './infrastrucutre/skills.repository';
-import {
-  SKILLS_SEED_SERVICE,
-  SkillSeedService,
-} from './infrastrucutre/skills.seed';
+import { SKILLS_SEED_SERVICE, SkillSeedService } from './skills.seed';
 import { Skill } from './core/skill.entity';
 import { SkillsController } from './api/skills.controller';
 import { QDRANT_CLIENT } from '../memory/infrastructure/qdrant.client';
