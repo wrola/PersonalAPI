@@ -28,14 +28,27 @@ export class ConversationService {
     try {
       context.memories = await this.memoryService.restoreMemory(question);
 
-      Logger.log(context);
-      const messages = await this.formPrompt(question, conversation, context);
       const modelSettings = {
         modelName: 'gpt-4-1106-preview',
         temperature: 0.7,
       };
+
+      Logger.log(context);
+      if (context.schemas) {
+        const chat = new ChatOpenAI(modelSettings).bind({
+          functions: [...context.schemas],
+          function_call: { name: context.defaultSchema } || undefined,
+        });
+
+        const result = await chat.invoke(context.messages);
+        return {
+          ...this.parseFunction(result),
+        };
+      }
+      const messages = await this.formPrompt(question, conversation, context);
       const chat = new ChatOpenAI(modelSettings);
       const { content } = await chat.call(messages);
+
       return content;
     } catch (err) {
       throw new BadRequestException(err, 'The OpenAI API Error');
@@ -124,6 +137,59 @@ export class ConversationService {
     messages.push(new HumanMessage(query));
 
     return messages;
+  }
+  intentRecognition = (query: string) => {
+    const messages = [
+      new SystemMessage(`As George, describe the user's intent.`),
+      new HumanMessage(query),
+    ];
+
+    const schemas = [
+      {
+        name: 'describe_intention',
+        description: `Describe the user intention towards Alice, based on the latest message and details from summary of their conversation.`,
+        parameters: {
+          type: 'object',
+          properties: {
+            type: {
+              type: 'number',
+              description: `
+                        Type has to be set to either 1 or 0:
+                        0: 'query' — when Alice has to say, write, remind, translate, correct, help, simply answer to the user's question or access her long-term memory or notes. Should be picked by default and for common conversations and chit-chat.
+                        1: 'action' — when the user asks Alice explicitly to perform an action that she needs to do herself related to Internet connection to the external apps, services, APIs, models (like Wolfram Alpha) finding sth on a website, calculating, giving environment related info (like weather or nearest locations) accessing and reading websites/urls contents, listing/updating tasks, and events and memorizing something by Alice.
+                  `,
+            },
+            category: {
+              type: 'number',
+              description: `
+                          Category has to be set to either 1, 2, 3 or 4:
+                          1: 'memory' — queries related to Alice's memory and knowledge about the user and related to him: events, preferences, relationships, music, people he (or Alice) may know (described usually by names or not commonly known people), things she know about herself and the user and things they share,
+                          2: 'note' — queries explicitly related to reading (not saving!) the user and Alice notes,
+                          3: 'resource' — queries related to links, websites, urls, apps, or knowledge that is not related to the user and Alice,
+                          4: 'all' — chosen otherwise and for general queries
+                        `,
+            },
+          },
+          required: ['category', 'type'],
+        },
+      },
+    ];
+
+    return {
+      messages,
+      schemas,
+      defaultSchema: 'describe_intention',
+    };
+  };
+  private parseFunction(result) {
+    if (result?.additional_kwargs?.function_call === undefined) {
+      return null;
+    }
+
+    return {
+      name: result.additional_kwargs.function_call.name,
+      args: JSON.parse(result.additional_kwargs.function_call.arguments),
+    };
   }
 }
 

@@ -30,6 +30,16 @@ export class ConversationController {
 
     const context = { conversationId };
 
+    const { messages, schemas, defaultSchema } =
+      this.conversationService.intentRecognition(question);
+
+    const intent = await this.conversationService.call(question, conversation, {
+      ...context,
+      messages,
+      schemas,
+      defaultSchema,
+    });
+
     const result = await this.conversationService.call(
       question,
       conversation,
