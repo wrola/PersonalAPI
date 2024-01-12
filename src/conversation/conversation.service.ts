@@ -147,7 +147,7 @@ export class ConversationService {
     const schemas = [
       {
         name: 'describe_intention',
-        description: `Describe the user intention towards Alice, based on the latest message and details from summary of their conversation.`,
+        description: `Describe the user intention towards George, based on the latest message and details from summary of their conversation.`,
         parameters: {
           type: 'object',
           properties: {
@@ -155,17 +155,17 @@ export class ConversationService {
               type: 'number',
               description: `
                         Type has to be set to either 1 or 0:
-                        0: 'query' — when Alice has to say, write, remind, translate, correct, help, simply answer to the user's question or access her long-term memory or notes. Should be picked by default and for common conversations and chit-chat.
-                        1: 'action' — when the user asks Alice explicitly to perform an action that she needs to do herself related to Internet connection to the external apps, services, APIs, models (like Wolfram Alpha) finding sth on a website, calculating, giving environment related info (like weather or nearest locations) accessing and reading websites/urls contents, listing/updating tasks, and events and memorizing something by Alice.
+                        0: 'query' — when George has to say, write, remind, translate, correct, help, simply answer to the user's question or access her long-term memory or notes. Should be picked by default and for common conversations and chit-chat.
+                        1: 'action' — when the user asks George explicitly to perform an action that she needs to do herself related to Internet connection to the external apps, services, APIs, models (like Wolfram Alpha) finding sth on a website, calculating, giving environment related info (like weather or nearest locations) accessing and reading websites/urls contents, listing/updating tasks, and events and memorizing something by George.
                   `,
             },
             category: {
               type: 'number',
               description: `
                           Category has to be set to either 1, 2, 3 or 4:
-                          1: 'memory' — queries related to Alice's memory and knowledge about the user and related to him: events, preferences, relationships, music, people he (or Alice) may know (described usually by names or not commonly known people), things she know about herself and the user and things they share,
-                          2: 'note' — queries explicitly related to reading (not saving!) the user and Alice notes,
-                          3: 'resource' — queries related to links, websites, urls, apps, or knowledge that is not related to the user and Alice,
+                          1: 'memory' — queries related to George's memory and knowledge about the user and related to him: events, preferences, relationships, music, people he (or George) may know (described usually by names or not commonly known people), things she know about herself and the user and things they share,
+                          2: 'note' — queries explicitly related to reading (not saving!) the user and George notes,
+                          3: 'resource' — queries related to links, websites, urls, apps, or knowledge that is not related to the user and George,
                           4: 'all' — chosen otherwise and for general queries
                         `,
             },

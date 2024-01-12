@@ -136,7 +136,7 @@ export class MemoryService implements IMemoryService {
     });
 
     const { content: uuid } = await model.call([
-      new SystemMessage(`As Alice, you need to pick a single action that is the most relevant to the user's query and context below. Your only job is to return UUID of this action and nothing else.
+      new SystemMessage(`As George, you need to pick a single action that is the most relevant to the user's query and context below. Your only job is to return UUID of this action and nothing else.
         conversation context###${context
           .map((doc) => doc[0].pageContent)
           .join('\n\n')}###

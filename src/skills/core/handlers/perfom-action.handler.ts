@@ -57,7 +57,7 @@ export class PerformAction implements SkillHandler {
     Logger.log(`Action found, the skill selected: ${skill.name}`);
 
     const messages = [
-      new SystemMessage(`As Alice execute the following action: """${
+      new SystemMessage(`As George execute the following action: """${
         skill.name
       }""" based on what user asks and context below.
         context###${(context as any)
