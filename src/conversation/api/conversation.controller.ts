@@ -48,8 +48,13 @@ export class ConversationController {
       };
     };
 
-    Logger.log(intent.args.type === 1 ? 'action' : 'query');
+    const intentType = intent.args.type === 1 ? 'action' : 'query';
 
+    Logger.log(`The intent is: ${intentType}`);
+
+    if (intentType === 'action') {
+      Logger.log(`The action result: ${intentType}`);
+    }
     const result = await this.conversationService.call(
       question,
       conversation,

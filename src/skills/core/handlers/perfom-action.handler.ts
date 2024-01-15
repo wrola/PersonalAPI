@@ -92,13 +92,11 @@ export class PerformAction implements SkillHandler {
           headers: { 'Content-Type': 'application/json' },
         });
 
-        Logger.log({ action: skill.name, data: response.json() });
-      } catch {
-        Logger.error({
-          action: skill.name,
-          data: 'Remote action failed.',
-          status: 'error',
-        });
+        Logger.log(`The result of ${skill.name}, is   ${response.json()}`);
+      } catch (err) {
+        Logger.error(
+          `the action: ${skill.name}, Remote action failed. with error status: ${err.status}`,
+        );
       }
     }
 
@@ -122,3 +120,5 @@ export class PerformAction implements SkillHandler {
     };
   };
 }
+
+export const PERFORM_ACTION = Symbol('PERFORM_ACTION');
