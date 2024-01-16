@@ -14,7 +14,7 @@ import {
   EMBEDDING_PRODUCER,
   IEmbeddingProducer,
 } from './infrastructure/embedding.producer';
-import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { ChatOpenAI } from '@langchain/openai';
 import { HumanMessage, SystemMessage } from 'langchain/schema';
 import { currentDate } from '../conversation/conversation.service';
 
@@ -78,7 +78,7 @@ export class MemoryService implements IMemoryService {
     const rerankMemories = await this.rerank(query, documentedMemories);
     return rerankMemories;
   }
-  private async getEmebed(query: string): Promise<number[]> {
+  async getEmebed(query: string): Promise<number[]> {
     return await this.embeddingProducer.embedQuery(query);
   }
   private async rerank(query: string, documents: any) {
@@ -135,7 +135,7 @@ export class MemoryService implements IMemoryService {
       maxConcurrency: 1,
     });
 
-    const { content: uuid } = await model.call([
+    const { content: uuid } = await model.invoke([
       new SystemMessage(`As George, you need to pick a single action that is the most relevant to the user's query and context below. Your only job is to return UUID of this action and nothing else.
         conversation context###${context
           .map((doc) => doc[0].pageContent)
@@ -157,6 +157,7 @@ export class MemoryService implements IMemoryService {
 export const MEMORY_SERVICE = Symbol('MEMORY_SERVICE');
 
 export interface IMemoryService {
+  getEmebed(query: string): Promise<number[]>;
   restoreMemory(queryEmbedding): Promise<unknown>;
   add(memoryInput: MemoryInput): Promise<Memory>;
   plan(query: string, actions: any[], context: unknown): Promise<string>;

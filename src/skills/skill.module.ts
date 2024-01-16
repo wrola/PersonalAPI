@@ -13,6 +13,10 @@ import { SKILLS_SEED_SERVICE, SkillSeedService } from './skills.seed';
 import { Skill } from './core/skill.entity';
 import { SkillsController } from './api/skills.controller';
 import { QDRANT_CLIENT } from '../memory/infrastructure/qdrant.client';
+import {
+  PERFORM_ACTION,
+  PerformAction,
+} from './core/handlers/perfom-action.handler';
 
 @Module({
   imports: [MemoryModule, TypeOrmModule.forFeature([Skill])],
@@ -35,8 +39,12 @@ import { QDRANT_CLIENT } from '../memory/infrastructure/qdrant.client';
       },
       inject: [SKILLS_REPOSITORY, QDRANT_CLIENT],
     },
+    {
+      provide: PERFORM_ACTION,
+      useClass: PerformAction,
+    },
   ],
   controllers: [SkillsController],
-  exports: [],
+  exports: [PERFORM_ACTION],
 })
 export class SkillModule {}

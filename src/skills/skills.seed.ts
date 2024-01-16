@@ -38,29 +38,26 @@ export class SkillSeedService {
   }
 
   async addInitialSkills() {
+    const [learnSkill, memorySkill] = [
+      new AddSkillHandler(this.repository, this.qdrantClient),
+      new AddSkillHandler(this.repository, this.qdrantClient),
+    ];
+
+    learnSkill.setPayload({
+      name: Skills.LEARNING,
+      description: SkillsDescription.LEARNING,
+      tags: ['memorize', 'memory', 'remember', 'skill'],
+      webhook: 'http://localhost:3000/learn',
+      schema: learnSchema,
+    });
+    memorySkill.setPayload({
+      name: Skills.MEMORY,
+      description: SkillsDescription.MEMORY,
+      tags: ['memorize', 'memory', 'remember'],
+    });
+
     return Promise.all(
-      [
-        new AddSkillHandler(
-          {
-            name: Skills.LEARNING,
-            description: SkillsDescription.LEARNING,
-            tags: ['memorize', 'memory', 'remember', 'skill'],
-            webhook: 'http://localhost:3000/learn',
-            schema: learnSchema,
-          },
-          this.repository,
-          this.qdrantClient,
-        ),
-        new AddSkillHandler(
-          {
-            name: Skills.MEMORY,
-            description: SkillsDescription.MEMORY,
-            tags: ['memorize', 'memory', 'remember'],
-          },
-          this.repository,
-          this.qdrantClient,
-        ),
-      ].map(async (skill) => {
+      [learnSkill, memorySkill].map(async (skill) => {
         await skill.execute();
       }),
     );

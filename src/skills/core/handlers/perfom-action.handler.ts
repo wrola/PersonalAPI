@@ -1,4 +1,4 @@
-import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { ChatOpenAI } from '@langchain/openai';
 import {
   ACTIONS,
   IQdrantClient,
@@ -19,14 +19,23 @@ import {
 import { currentDate } from '../../../conversation/conversation.service';
 
 export class PerformAction implements SkillHandler {
+  payload: Record<string, unknown>;
+
   constructor(
-    readonly payload: Record<string, unknown>,
     @Inject(QDRANT_CLIENT) private qdrantClient: IQdrantClient,
     @Inject(SKILLS_REPOSITORY) private skillsRepository: ISkillsRepository,
     @Inject(MEMORY_SERVICE) private memoryService: IMemoryService,
   ) {}
+  setPayload(payload: Record<string, unknown>): void {
+    this.payload = payload;
+  }
   async execute(): Promise<void> {
-    const { embedding, query, context } = this.payload;
+    if (!this.payload) {
+      throw new Error('There is no payload');
+    }
+
+    const { query, context } = this.payload;
+    const embedding = await this.memoryService.getEmebed(query as string);
     const actions = await this.qdrantClient.search(ACTIONS, {
       vector: embedding,
       limit: 1,
@@ -60,7 +69,7 @@ export class PerformAction implements SkillHandler {
       new SystemMessage(`As George execute the following action: """${
         skill.name
       }""" based on what user asks and context below.
-        context###${(context as any)
+        context###${(context as any) // TODO search for correct context 
           .map((doc: any) => doc[0].pageContent)
           .join('\n\n')}###
 

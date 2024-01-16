@@ -1,4 +1,5 @@
 export interface SkillHandler {
-  readonly payload: Record<string, unknown>;
+  payload: Record<string, unknown>;
   execute(): Promise<void>;
+  setPayload(payload: Record<string, unknown>): void; // TODO remove when swithc to CQRS
 }

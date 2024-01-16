@@ -22,19 +22,21 @@ export class SkillHandlerFactory implements ISkillHandlerFactory {
   ) {}
   create(payload: Record<string, unknown>): SkillHandler {
     const { type } = payload;
+    let handler: SkillHandler;
     switch (type) {
       case Skills.MEMORY:
         const { content, tags, source } = payload;
-        return new AddMemoryHandler(
-          { content, tags, source } as MemoryInput,
-          this.memoryService,
-        );
+        handler = new AddMemoryHandler(this.memoryService);
+        handler.setPayload({
+          content,
+          tags,
+          source,
+        } as MemoryInput);
+        return handler;
       case Skills.LEARNING:
-        return new AddSkillHandler(
-          payload,
-          this.skillRepository,
-          this.qdrantClient,
-        );
+        handler = new AddSkillHandler(this.skillRepository, this.qdrantClient);
+        handler.setPayload(payload);
+        return handler;
       default:
         throw new InternalServerErrorException('Skill not exists');
     }

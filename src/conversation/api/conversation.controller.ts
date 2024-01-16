@@ -1,4 +1,12 @@
-import { Body, Controller, Headers, Logger, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Headers,
+  Inject,
+  Logger,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { ConversationService } from '../conversation.service';
 import { InputConversationDto } from './dto/input-conversation.dto';
 import { v4 } from 'uuid';
@@ -6,10 +14,17 @@ import { OutputConversationDto } from './dto/output-conversation.dto';
 import { Response } from 'express';
 import { InputLearnDto } from '../../skills/api/dto/input-learn.dto';
 import { OutputLearnDto } from '../../skills/api/dto/output-learn.dto';
+import {
+  PERFORM_ACTION,
+  PerformAction,
+} from '../../skills/core/handlers/perfom-action.handler';
 
 @Controller()
 export class ConversationController {
-  constructor(private readonly conversationService: ConversationService) {}
+  constructor(
+    private readonly conversationService: ConversationService,
+    @Inject(PERFORM_ACTION) private readonly performAction: PerformAction,
+  ) {}
   @Post('/talk')
   async conversation(
     @Body() body: InputConversationDto,
@@ -54,6 +69,8 @@ export class ConversationController {
 
     if (intentType === 'action') {
       Logger.log(`The action result: ${intentType}`);
+      this.performAction.setPayload({ query: question, context });
+      await this.performAction.execute();
     }
     const result = await this.conversationService.call(
       question,

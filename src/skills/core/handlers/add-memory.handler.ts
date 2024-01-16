@@ -5,10 +5,11 @@ import { MemoryInput } from '../../../memory/core/entities/memory.entity';
 
 @Injectable()
 export class AddMemoryHandler implements SkillHandler {
-  constructor(
-    readonly payload: MemoryInput, // TODO ADD INPUT DTO
-    @Inject(MEMORY_SERVICE) readonly memoryService: IMemoryService,
-  ) {}
+  payload: MemoryInput;
+  constructor(@Inject(MEMORY_SERVICE) readonly memoryService: IMemoryService) {}
+  setPayload(payload: MemoryInput): void {
+    this.payload = payload;
+  }
   async execute(): Promise<void> {
     await this.memoryService.add(this.payload);
   }

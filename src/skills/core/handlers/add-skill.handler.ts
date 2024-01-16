@@ -14,12 +14,18 @@ import { Document } from 'langchain/document';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 
 export class AddSkillHandler implements SkillHandler {
+  payload: Record<string, unknown>;
   constructor(
-    readonly payload: Record<string, unknown>,
     @Inject(SKILLS_REPOSITORY) readonly skillRepository: ISkillsRepository,
     @Inject(QDRANT_CLIENT) readonly qdrantClient: IQdrantClient,
   ) {}
+  setPayload(payload: Record<string, unknown>): void {
+    this.payload = payload;
+  }
   async execute(): Promise<void> {
+    if (!this.payload) {
+      throw new Error('Payload is not set');
+    }
     const { name, description, synced = false } = this.payload;
     const skill = Skill.create(
       name,

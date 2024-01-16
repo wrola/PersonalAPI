@@ -11,7 +11,7 @@ import {
   MESSAGE_REPOSITORY,
 } from '../memory/infrastructure/message.repository';
 import { IMemoryService, MEMORY_SERVICE } from '../memory/memory.service';
-import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { ChatOpenAI } from '@langchain/openai';
 
 @Injectable()
 export class ConversationService {
@@ -32,8 +32,6 @@ export class ConversationService {
         modelName: 'gpt-4-1106-preview',
         temperature: 0.7,
       };
-
-      Logger.log(context);
       if (context.schemas) {
         const chat = new ChatOpenAI(modelSettings).bind({
           functions: [...context.schemas],
@@ -47,7 +45,7 @@ export class ConversationService {
       }
       const messages = await this.formPrompt(question, conversation, context);
       const chat = new ChatOpenAI(modelSettings);
-      const { content } = await chat.call(messages);
+      const { content } = await chat.invoke(messages);
 
       return content;
     } catch (err) {
