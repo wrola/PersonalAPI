@@ -34,27 +34,17 @@ export class PerformAction implements SkillHandler {
       throw new Error('There is no payload');
     }
 
-    const { query, context } = this.payload;
+    const { query, memories } = this.payload;
     const embedding = await this.memoryService.getEmebed(query as string);
     const actions = await this.qdrantClient.search(ACTIONS, {
       vector: embedding,
-      limit: 1,
-      filter: {
-        must: [
-          {
-            key: 'source',
-            match: {
-              value: ACTIONS,
-            },
-          },
-        ],
-      },
+      limit: 5,
     });
 
     const uuid = await this.memoryService.plan(
       query as string,
       actions as any[],
-      context as any,
+      memories as any[],
     );
 
     const skill = await this.skillsRepository.findOne(uuid);
@@ -69,9 +59,14 @@ export class PerformAction implements SkillHandler {
       new SystemMessage(`As George execute the following action: """${
         skill.name
       }""" based on what user asks and context below.
-        context###${(context as any) // TODO search for correct context 
-          .map((doc: any) => doc[0].pageContent)
-          .join('\n\n')}###
+        context###
+        ${
+          (memories as any[]) && (memories as any[]).length
+            ? (memories as any[])
+                .map((doc: any) => doc[0].pageContent)
+                .join('\n\n')
+            : ''
+        }###
 
         Facts:
         - Current date and time: ${currentDate()}`),

@@ -43,40 +43,32 @@ export class ConversationController {
 
     Logger.log(`${conversation}`);
 
-    const context = { conversationId };
-
     const { messages, schemas, defaultSchema } =
       this.conversationService.intentRecognition(question);
 
-    const intent = (await this.conversationService.call(
+    const { content, memories } = (await this.conversationService.call(
       question,
       conversation,
       {
-        ...context,
+        conversationId,
         messages,
         schemas,
         defaultSchema,
       },
-    )) as {
-      args: {
-        type: number;
-      };
-    };
+    )) as any;
 
-    const intentType = intent.args.type === 1 ? 'action' : 'query';
+    const intentType = content.args.type === 1 ? 'action' : 'query';
 
     Logger.log(`The intent is: ${intentType}`);
 
     if (intentType === 'action') {
       Logger.log(`The action result: ${intentType}`);
-      this.performAction.setPayload({ query: question, context });
+      this.performAction.setPayload({ query: question, memories });
       await this.performAction.execute();
     }
-    const result = await this.conversationService.call(
-      question,
-      conversation,
-      context,
-    );
+    const result = await this.conversationService.call(question, conversation, {
+      messages,
+    });
 
     response.setHeader('x-conversation-id', conversationId);
 

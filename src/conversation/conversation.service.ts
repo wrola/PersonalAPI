@@ -26,7 +26,7 @@ export class ConversationService {
     context: any,
   ): Promise<unknown> {
     try {
-      context.memories = await this.memoryService.restoreMemory(question);
+      const memories = await this.memoryService.restoreMemory(question);
 
       const modelSettings = {
         modelName: 'gpt-4-1106-preview',
@@ -40,14 +40,15 @@ export class ConversationService {
 
         const result = await chat.invoke(context.messages);
         return {
-          ...this.parseFunction(result),
+          content: this.parseFunction(result),
+          memories,
         };
       }
       const messages = await this.formPrompt(question, conversation, context);
       const chat = new ChatOpenAI(modelSettings);
       const { content } = await chat.invoke(messages);
 
-      return content;
+      return { content, memories };
     } catch (err) {
       throw new BadRequestException(err, 'The OpenAI API Error');
     }

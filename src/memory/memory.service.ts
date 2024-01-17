@@ -63,17 +63,7 @@ export class MemoryService implements IMemoryService {
     const queryEmbedding = await this.getEmebed(query);
     const documentedMemories = await this.qdrantClient.search(MEMORIES, {
       vector: queryEmbedding,
-      limit: 1,
-      filter: {
-        must: [
-          {
-            key: 'source',
-            match: {
-              value: MEMORIES,
-            },
-          },
-        ],
-      },
+      limit: 5,
     });
     const rerankMemories = await this.rerank(query, documentedMemories);
     return rerankMemories;
@@ -94,7 +84,7 @@ export class MemoryService implements IMemoryService {
       Logger.log('Checking document: ' + document.metadata.name);
       checks.push({
         uuid: document.metadata.uuid,
-        rank: model.call([
+        rank: model.invoke([
           new SystemMessage(`Check if the following document is relevant to the user query: """${query}""" and may be helpful to answer the question / query. Return 0 if not relevant, 1 if relevant.
 
                 Facts:
