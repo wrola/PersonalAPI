@@ -15,7 +15,7 @@ import {
   BaseMessageChunk,
   HumanMessage,
   SystemMessage,
-} from 'langchain/schema';
+} from '@langchain/core/messages';
 import { currentDate } from '../../../conversation/conversation.service';
 
 export class PerformAction implements SkillHandler {

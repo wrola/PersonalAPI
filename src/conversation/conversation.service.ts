@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
-import { AIMessage, HumanMessage, SystemMessage } from 'langchain/schema';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Message } from '../memory/core/entities/message.entity';
 import {
   IMessagesRepository,
@@ -12,6 +6,11 @@ import {
 } from '../memory/infrastructure/message.repository';
 import { IMemoryService, MEMORY_SERVICE } from '../memory/memory.service';
 import { ChatOpenAI } from '@langchain/openai';
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+} from '@langchain/core/messages';
 
 @Injectable()
 export class ConversationService {
