@@ -10,8 +10,8 @@ import {
   IQdrantClient,
   QDRANT_CLIENT,
 } from '../../../memory/infrastructure/qdrant.client';
-import { Document } from 'langchain/document';
-import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { Document } from '@langchain/core/documents';
+import { OpenAIEmbeddings } from '@langchain/openai';
 
 export class AddSkillHandler implements SkillHandler {
   payload: Record<string, unknown>;

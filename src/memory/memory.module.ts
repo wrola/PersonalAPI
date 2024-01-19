@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { OpenAIEmbeddings } from '@langchain/openai';
 import { QdrantClient } from '@qdrant/js-client-rest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Message } from './core/entities/message.entity';

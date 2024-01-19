@@ -4,7 +4,7 @@ import {
   MEMORY_REPOSITORY,
 } from './infrastructure/memory.repository';
 import { Memory, MemoryInput } from './core/entities/memory.entity';
-import { Document } from 'langchain/document';
+import { Document } from '@langchain/core/documents';
 import {
   IQdrantClient,
   MEMORIES,
@@ -15,7 +15,7 @@ import {
   IEmbeddingProducer,
 } from './infrastructure/embedding.producer';
 import { ChatOpenAI } from '@langchain/openai';
-import { HumanMessage, SystemMessage } from 'langchain/schema';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { currentDate } from '../conversation/conversation.service';
 
 @Injectable()

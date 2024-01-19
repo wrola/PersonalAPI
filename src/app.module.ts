@@ -32,7 +32,6 @@ import { Skill } from './skills/core/skill.entity';
           entities: [Message, Memory, Skill],
           migrationsRun:
             configService.get('DATABASE_RUN_MIGRATIONS') === 'true',
-          autoloadEntities: true,
         },
     }),
     AuthModule,
