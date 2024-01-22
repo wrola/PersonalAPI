@@ -1,33 +1,25 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: npm
+    directory: /
     schedule:
-      interval: "weekly"
-      day: "sunday"
-      time: "16:00"
-
+      interval: weekly
+      day: sunday
+      time: '16:00'
 name: Dependabot fetch metadata
-on: pull_request
-
+'on': pull_request
 permissions:
   pull-requests: write
   issues: write
   repository-projects: write
-
 jobs:
   dependabot:
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: 'github.actor == ''dependabot[bot]'''
     steps:
       - name: Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v1
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-          OPENAI_API_KEY: "${{ secrets.OPENAI_API_KEY }}""
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          OPENAI_API_KEY: '${{ secrets.OPENAI_API_KEY }}'
