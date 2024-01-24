@@ -27,6 +27,9 @@ export class ConversationService {
     try {
       const memories = await this.memoryService.restoreMemory(question);
 
+      if (memories.length) {
+        context.memories;
+      }
       const modelSettings = {
         modelName: 'gpt-4-1106-preview',
         temperature: 0.7,
@@ -86,7 +89,11 @@ export class ConversationService {
     }
   }
 
-  async formPrompt(query: string, conversation: any[], context?: any) {
+  async formPrompt(
+    query: string,
+    conversation: any[],
+    context?: Record<string, Array<unknown>>,
+  ) {
     let messages = [
       new SystemMessage(`
          Hey, it's George here!
@@ -110,7 +117,7 @@ export class ConversationService {
         Let's keep this conversation rolling! 🚀
 
         ${
-          context && context.memories.length
+          context && context.memories?.length
             ? `context (these are my memories, that may include details about me and you.
         ###${context.memories
           .map(

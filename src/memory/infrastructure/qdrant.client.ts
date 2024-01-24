@@ -8,7 +8,7 @@ export interface IQdrantClient {
   search(
     collectionName: string,
     data: Record<string, unknown>,
-  ): Promise<unknown>;
+  ): Promise<Array<unknown>>;
   createCollection(): Promise<unknown>;
   getCollection(): Promise<unknown>;
   upsert(

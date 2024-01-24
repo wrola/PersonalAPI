@@ -59,7 +59,7 @@ export class MemoryService implements IMemoryService {
 
     return newMemory;
   }
-  async restoreMemory(query: string): Promise<unknown> {
+  async restoreMemory(query: string): Promise<Array<unknown>> {
     const queryEmbedding = await this.getEmebed(query);
     const documentedMemories = await this.qdrantClient.search(MEMORIES, {
       vector: queryEmbedding,
@@ -148,7 +148,7 @@ export const MEMORY_SERVICE = Symbol('MEMORY_SERVICE');
 
 export interface IMemoryService {
   getEmebed(query: string): Promise<number[]>;
-  restoreMemory(queryEmbedding): Promise<unknown>;
+  restoreMemory(queryEmbedding): Promise<Array<unknown>>;
   add(memoryInput: MemoryInput): Promise<Memory>;
   plan(query: string, actions: any[], context: unknown): Promise<string>;
 }

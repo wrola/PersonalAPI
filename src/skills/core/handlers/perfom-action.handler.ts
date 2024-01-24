@@ -43,8 +43,8 @@ export class PerformAction implements SkillHandler {
 
     const uuid = await this.memoryService.plan(
       query as string,
-      actions as any[],
-      memories as any[],
+      actions as any[], // TODO add propper type
+      memories as any[], //TODO type memories!
     );
 
     const skill = await this.skillsRepository.findOne(uuid);
