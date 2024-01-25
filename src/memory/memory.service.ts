@@ -59,7 +59,7 @@ export class MemoryService implements IMemoryService {
 
     return newMemory;
   }
-  async restoreMemory(query: string): Promise<Array<unknown>> {
+  async restoreMemory(query: string): Promise<Array<Document>> {
     const queryEmbedding = await this.getEmebed(query);
     const documentedMemories = await this.qdrantClient.search(MEMORIES, {
       vector: queryEmbedding,
@@ -105,7 +105,7 @@ export class MemoryService implements IMemoryService {
         ]),
       });
     }
-
+// TODO RETHINK FLOW OF MEMORIZE!
     const results = await Promise.all(checks.map((check: any) => check.rank));
     const rankings = results.map((result, index) => {
       return { uuid: checks[index].uuid, score: result.content };
