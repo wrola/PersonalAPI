@@ -47,6 +47,7 @@ export class AddSkillHandler implements SkillHandler {
           uuid: skill.id,
           name: skill.name,
           vector: embedding,
+          content: `${skill.name}: ${skill.description}`,
         },
       });
       try {
@@ -54,7 +55,7 @@ export class AddSkillHandler implements SkillHandler {
           wait: true,
           batch: {
             ids: [documentedMemory.metadata.uuid],
-            payloads: [documentedMemory.metadata],
+            payloads: [documentedMemory],
             vectors: [documentedMemory.metadata.vector],
           },
         });

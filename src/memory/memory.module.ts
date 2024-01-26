@@ -8,7 +8,11 @@ import {
   MESSAGE_REPOSITORY,
   MessagesSqlRepository,
 } from './infrastructure/message.repository';
-import { QDRANT_CLIENT, initVectorStore } from './infrastructure/qdrant.client';
+import {
+  QDRANT_CLIENT,
+  initVectorStore,
+  loadDefaultMemories,
+} from './infrastructure/qdrant.client';
 import { EMBEDDING_PRODUCER } from './infrastructure/embedding.producer';
 import { MEMORY_SERVICE, MemoryService } from './memory.service';
 import {
@@ -16,6 +20,7 @@ import {
   MemorySqlRepository,
 } from './infrastructure/memory.repository';
 import { Memory } from './core/entities/memory.entity';
+import { INIT_MEMORY, InitialMemory } from './init-memory.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Message, Memory]), ConfigModule],
@@ -49,6 +54,14 @@ import { Memory } from './core/entities/memory.entity';
     {
       provide: MEMORY_SERVICE,
       useClass: MemoryService,
+    },
+    {
+      provide: INIT_MEMORY,
+      useFactory: async (service) => {
+        const memoryService = new InitialMemory(service);
+        await memoryService.load();
+      },
+      inject: [MEMORY_SERVICE],
     },
   ],
   exports: [MESSAGE_REPOSITORY, MEMORY_SERVICE, QDRANT_CLIENT],

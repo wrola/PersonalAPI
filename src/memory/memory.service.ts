@@ -71,7 +71,7 @@ export class MemoryService implements IMemoryService {
   async getEmebed(query: string): Promise<number[]> {
     return await this.embeddingProducer.embedQuery(query);
   }
-  private async rerank(query: string, documents: any) {
+  private async rerank(query: string, documents: Array<Document>) { 
     const model = new ChatOpenAI({
       modelName: 'gpt-3.5-turbo-16k',
       temperature: 0,
@@ -80,7 +80,7 @@ export class MemoryService implements IMemoryService {
     Logger.log('Reranking documents...');
 
     const checks: any = [];
-    for (const [document] of documents) {
+    for (const document of documents) {
       Logger.log('Checking document: ' + document.metadata.name);
       checks.push({
         uuid: document.metadata.uuid,
@@ -105,7 +105,7 @@ export class MemoryService implements IMemoryService {
         ]),
       });
     }
-// TODO RETHINK FLOW OF MEMORIZE!
+    // TODO RETHINK FLOW OF MEMORIZE!
     const results = await Promise.all(checks.map((check: any) => check.rank));
     const rankings = results.map((result, index) => {
       return { uuid: checks[index].uuid, score: result.content };
@@ -133,7 +133,7 @@ export class MemoryService implements IMemoryService {
         available actions###${actions
           .map(
             (action) =>
-              `(${action[0].metadata.uuid}) + ${action[0].pageContent}`,
+              `(${action[0].payload.uuid}) + ${action[0].pageContent}`,
           )
           .join('\n\n')}###
         `),

@@ -1,4 +1,7 @@
 import { Logger } from '@nestjs/common';
+import { IMemoryService } from '../memory.service';
+import { MemoryInput } from '../core/entities/memory.entity';
+import { Document } from '@langchain/core/documents';
 
 export const ACTIONS = 'actions';
 export const MEMORIES = 'memories';
@@ -8,7 +11,7 @@ export interface IQdrantClient {
   search(
     collectionName: string,
     data: Record<string, unknown>,
-  ): Promise<Array<unknown>>;
+  ): Promise<Array<Document>>;
   createCollection(): Promise<unknown>;
   getCollection(): Promise<unknown>;
   upsert(
@@ -45,3 +48,24 @@ export const initVectorStore = async (qdrant) => {
     Logger.error(`During qdrant initialization + ${err}`, 'SKILLS');
   }
 };
+
+export const loadDefaultMemories = async (memoryService: IMemoryService) => {
+  return Promise.all(
+    defaulMemories.map(async (memory) => await memoryService.add(memory)),
+  );
+};
+
+const defaulMemories: Array<MemoryInput> = [
+  {
+    source: 'Initial Knowledge',
+    content:
+      "I'm George. The person who is very kind and generous. I'm also very smart and funny.",
+    tags: ['self-perception', 'personality', 'self', 'George'],
+  },
+  {
+    content:
+      'Wojtek is most common user, that is really happy to talk to you, use skill and knowledge to help him with issues that he raise to you and have fun working together on problems to tackle down',
+    tags: ['Wojtek', 'user', 'wojtek'],
+    source: 'Initial Knowledge',
+  },
+];
