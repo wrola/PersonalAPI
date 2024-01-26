@@ -71,7 +71,7 @@ export class MemoryService implements IMemoryService {
   async getEmebed(query: string): Promise<number[]> {
     return await this.embeddingProducer.embedQuery(query);
   }
-  private async rerank(query: string, documents: Array<Document>) { 
+  private async rerank(query: string, documents: Array<Document>) {
     const model = new ChatOpenAI({
       modelName: 'gpt-3.5-turbo-16k',
       temperature: 0,

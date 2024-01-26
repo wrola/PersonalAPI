@@ -8,11 +8,7 @@ import {
   MESSAGE_REPOSITORY,
   MessagesSqlRepository,
 } from './infrastructure/message.repository';
-import {
-  QDRANT_CLIENT,
-  initVectorStore,
-  loadDefaultMemories,
-} from './infrastructure/qdrant.client';
+import { QDRANT_CLIENT, initVectorStore } from './infrastructure/qdrant.client';
 import { EMBEDDING_PRODUCER } from './infrastructure/embedding.producer';
 import { MEMORY_SERVICE, MemoryService } from './memory.service';
 import {
