@@ -22,13 +22,13 @@ export class Memory {
   active: boolean;
 
   @Column({ type: 'text' })
-  source: string;
+  name: string;
 
   static create(memoryInput: MemoryInput): Memory {
     const memory = new Memory();
     memory.id = v4();
     memory.content = memoryInput.content;
-    memory.source = memoryInput.source;
+    memory.name = memoryInput.name;
     memory.tags = memoryInput.tags;
     memory.active = true;
     if (memoryInput.reflection) memory.reflection = memoryInput.reflection;
@@ -38,7 +38,7 @@ export class Memory {
 
 export type MemoryInput = {
   content: string;
-  source: string;
+  name: string;
   tags: Array<string>;
   reflection?: string;
 };

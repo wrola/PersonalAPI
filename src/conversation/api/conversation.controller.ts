@@ -77,7 +77,7 @@ export class ConversationController {
       question,
       result ?? 'No answer.',
     );
-    Logger.log(`The answer is: ${result}`);
+    Logger.log(`Is there a answer? ${result ? 'Yes' : 'No answer.'}`);
 
     return response.json(
       new OutputConversationDto(result as string, conversationId),

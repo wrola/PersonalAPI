@@ -46,7 +46,6 @@ export class AddSkillHandler implements SkillHandler {
         metadata: {
           uuid: skill.id,
           name: skill.name,
-          vector: embedding,
           content: `${skill.name}: ${skill.description}`,
         },
       });
@@ -56,7 +55,7 @@ export class AddSkillHandler implements SkillHandler {
           batch: {
             ids: [documentedMemory.metadata.uuid],
             payloads: [documentedMemory], //TODO checkout the way now the skills are kept in DB? qdrant?
-            vectors: [documentedMemory.metadata.vector],
+            vectors: [embedding],
           },
         });
         Logger.log('The skill added to qdrant', 'SKILLS');

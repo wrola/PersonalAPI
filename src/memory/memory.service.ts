@@ -9,6 +9,7 @@ import {
   IQdrantClient,
   MEMORIES,
   QDRANT_CLIENT,
+  QdrantDocs,
 } from './infrastructure/qdrant.client';
 import {
   EMBEDDING_PRODUCER,
@@ -34,9 +35,10 @@ export class MemoryService implements IMemoryService {
       pageContent: newMemory.content,
       metadata: {
         uuid: newMemory.id,
+        name: newMemory.name,
       },
     });
-
+    // how create a memory initial one?
     const [embedding] = await this.embeddingProducer.embedDocuments([
       documentedMemory.pageContent,
     ]);
@@ -52,7 +54,7 @@ export class MemoryService implements IMemoryService {
         batch: {
           ids: [documentedMemory.metadata.uuid],
           vectors: [embedding],
-          payloads: [documentedMemory.metadata],
+          payloads: [documentedMemory],
         },
       }),
     ]);
@@ -71,7 +73,7 @@ export class MemoryService implements IMemoryService {
   async getEmebed(query: string): Promise<number[]> {
     return await this.embeddingProducer.embedQuery(query);
   }
-  private async rerank(query: string, documents: Array<Document>) {
+  private async rerank(query: string, documents: Array<QdrantDocs>) {
     const model = new ChatOpenAI({
       modelName: 'gpt-3.5-turbo-16k',
       temperature: 0,
@@ -81,9 +83,9 @@ export class MemoryService implements IMemoryService {
 
     const checks: any = [];
     for (const document of documents) {
-      Logger.log('Checking document: ' + document.metadata.name);
+      Logger.log('Checking document: ' + document.payload.metadata.name); // should it be a metadata or payload?
       checks.push({
-        uuid: document.metadata.uuid,
+        uuid: document.payload.metadata.uuid,
         rank: model.invoke([
           new SystemMessage(`Check if the following document is relevant to the user query: """${query}""" and may be helpful to answer the question / query. Return 0 if not relevant, 1 if relevant.
 
@@ -95,9 +97,9 @@ export class MemoryService implements IMemoryService {
                  - Pay attention to the keywords from the query, mentioned links etc.
 
                  Additional info:
-                 - Document title: ${document.metadata.name}
+                 - Document title: ${document.payload.metadata.name}
 
-                 Document content: ###${document.pageContent}###
+                 Document content: ###${document.payload.pageContent}###
 
                  Query:
                  `),
@@ -106,15 +108,18 @@ export class MemoryService implements IMemoryService {
       });
     }
     // TODO RETHINK FLOW OF MEMORIZE!
-    const results = await Promise.all(checks.map((check: any) => check.rank));
+    const results = await Promise.all(
+      checks.map(async (check: any) => check.rank),
+    );
     const rankings = results.map((result, index) => {
       return { uuid: checks[index].uuid, score: result.content };
     });
     Logger.log('Reranked documents.');
-    return documents.filter((document: any) =>
+    return documents.filter((document: QdrantDocs) =>
       rankings.find(
         (ranking) =>
-          ranking.uuid === document[0].metadata.uuid && ranking.score === '1',
+          ranking.uuid === document.payload.metadata.uuid &&
+          ranking.score === '1',
       ),
     );
   }
@@ -124,7 +129,7 @@ export class MemoryService implements IMemoryService {
       temperature: 0,
       maxConcurrency: 1,
     });
-
+    // TODO check if plan working during action execution
     const { content: uuid } = await model.invoke([
       new SystemMessage(`As George, you need to pick a single action that is the most relevant to the user's query and context below. Your only job is to return UUID of this action and nothing else.
         conversation context###${context

@@ -25,12 +25,12 @@ export class SkillHandlerFactory implements ISkillHandlerFactory {
     let handler: SkillHandler;
     switch (type) {
       case Skills.MEMORY:
-        const { content, tags, source } = payload;
+        const { content, tags, name } = payload;
         handler = new AddMemoryHandler(this.memoryService);
         handler.setPayload({
           content,
           tags,
-          source,
+          name,
         } as MemoryInput);
         return handler;
       case Skills.LEARNING:

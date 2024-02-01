@@ -1,5 +1,5 @@
-import { Logger } from '@nestjs/common';
 import { Document } from '@langchain/core/documents';
+import { Logger } from '@nestjs/common';
 
 export const ACTIONS = 'actions';
 export const MEMORIES = 'memories';
@@ -9,7 +9,7 @@ export interface IQdrantClient {
   search(
     collectionName: string,
     data: Record<string, unknown>,
-  ): Promise<Array<Document>>;
+  ): Promise<Array<QdrantDocs>>;
   createCollection(): Promise<unknown>;
   getCollection(): Promise<unknown>;
   upsert(
@@ -17,6 +17,16 @@ export interface IQdrantClient {
     data: Record<string, unknown>,
   ): Promise<unknown>;
 }
+
+export type QdrantDocs = Document & {
+  payload: {
+    pageContent: string;
+    metadata: {
+      name: string;
+      uuid: string;
+    };
+  };
+};
 
 export const initVectorStore = async (qdrant) => {
   try {
