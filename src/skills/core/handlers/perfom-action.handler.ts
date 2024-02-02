@@ -86,9 +86,11 @@ export class PerformAction implements SkillHandler {
     }
 
     const content = await chat.invoke(messages);
-    const result = this._parseFunctionCall(content);
+    const result = skill.schema
+      ? this._parseFunctionCall(content)
+      : { args: content.content };
 
-    if (skill.webhook && result.args) {
+    if (skill.webhook) {
       try {
         const response = await fetch(skill.webhook, {
           method: 'POST',

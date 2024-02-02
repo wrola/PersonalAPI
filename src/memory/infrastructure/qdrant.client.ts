@@ -11,7 +11,7 @@ export interface IQdrantClient {
     data: Record<string, unknown>,
   ): Promise<Array<QdrantDocs>>;
   createCollection(): Promise<unknown>;
-  getCollection(): Promise<unknown>;
+  getCollection(): Promise<Record<string, unknown>>;
   upsert(
     collectionName: string,
     data: Record<string, unknown>,

@@ -33,6 +33,7 @@ export class AddSkillHandler implements SkillHandler {
       this.payload?.webhook,
       this.payload?.tags,
       this.payload?.schema,
+      this.payload?.id,
     );
     await this.skillRepository.save(skill);
 

@@ -31,15 +31,14 @@ export class Skill {
   @CreateDateColumn()
   createdAt: Date;
 
-  static create(name, description, webhook?, tags?, schema?) {
+  static create(name, description, webhook?, tags?, schema?, id?) {
     const skill = new Skill();
-    skill.id = v4();
+    skill.id = id ? id : v4();
     skill.name = name;
     skill.description = description;
-
-    if (webhook) skill.webhook = webhook;
-    if (tags) skill.tags = tags;
-    if (schema) skill.schema = schema;
+    skill.webhook = webhook ? webhook : null;
+    skill.tags = tags ? tags : null;
+    skill.schema = schema ? schema : null;
 
     return skill;
   }

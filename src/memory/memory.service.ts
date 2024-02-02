@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ImATeapotException, Inject, Injectable, Logger } from '@nestjs/common';
 import {
   IMemoryRepository,
   MEMORY_REPOSITORY,
@@ -38,7 +38,7 @@ export class MemoryService implements IMemoryService {
         name: newMemory.name,
       },
     });
-    // how create a memory initial one?
+
     const [embedding] = await this.embeddingProducer.embedDocuments([
       documentedMemory.pageContent,
     ]);
@@ -65,7 +65,7 @@ export class MemoryService implements IMemoryService {
     const queryEmbedding = await this.getEmebed(query);
     const documentedMemories = await this.qdrantClient.search(MEMORIES, {
       vector: queryEmbedding,
-      limit: 5,
+      limit: 3,
     });
     const rerankMemories = await this.rerank(query, documentedMemories);
     return rerankMemories;
@@ -129,23 +129,31 @@ export class MemoryService implements IMemoryService {
       temperature: 0,
       maxConcurrency: 1,
     });
-    // TODO check if plan working during action execution
+
+    if (!actions.length) {
+      new ImATeapotException('No actions possible');
+    }
+
     const { content: uuid } = await model.invoke([
       new SystemMessage(`As George, you need to pick a single action that is the most relevant to the user's query and context below. Your only job is to return UUID of this action and nothing else.
-        conversation context###${context
-          .map((doc) => doc[0].pageContent)
-          .join('\n\n')}###
+        conversation context###${
+          context.length
+            ? context.map((doc) => doc.payload.pageContent).join('\n\n')
+            : ''
+        }###
         available actions###${actions
-          .map(
-            (action) =>
-              `(${action[0].payload.uuid}) + ${action[0].pageContent}`,
-          )
+          .map((action) => `(${action.id}) + ${action.payload.pageContent}`)
           .join('\n\n')}###
         `),
       new HumanMessage(query + '### Pick an action (UUID): '),
     ]);
 
     return uuid as string;
+  }
+  async isMemoryReady(): Promise<boolean> {
+    const collectionsState = await this.qdrantClient.getCollection();
+
+    return collectionsState.status === 'ok';
   }
 }
 
@@ -156,4 +164,5 @@ export interface IMemoryService {
   restoreMemory(queryEmbedding): Promise<Array<unknown>>;
   add(memoryInput: MemoryInput): Promise<Memory>;
   plan(query: string, actions: any[], context: unknown): Promise<string>;
+  isMemoryReady(): Promise<boolean>; // TODO add checker if qdrant is ready
 }
