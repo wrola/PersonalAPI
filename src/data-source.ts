@@ -5,6 +5,7 @@ import { DataSource } from 'typeorm';
 import { Memory } from './memory/core/entities/memory.entity';
 import { Message } from './memory/core/entities/message.entity';
 import { Skill } from './skills/core/skill.entity';
+import path = require('path');
 
 export const dataSource = new DataSource({
   type: 'postgres',
@@ -13,5 +14,6 @@ export const dataSource = new DataSource({
   username: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD || 'test',
   entities: [Memory, Message, Skill],
-  migrations: ['dist/migration/*.js'],
+  migrationsRun: true,
+  migrations: [path.join(__dirname, 'migration', '*{.ts,.js}')],
 });

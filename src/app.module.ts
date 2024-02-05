@@ -9,6 +9,7 @@ import { Memory } from './memory/core/entities/memory.entity';
 import { MemoryModule } from './memory/memory.module';
 import { SkillModule } from './skills/skill.module';
 import { Skill } from './skills/core/skill.entity';
+import path = require('path');
 
 @Module({
   imports: [
@@ -30,8 +31,9 @@ import { Skill } from './skills/core/skill.entity';
           username: configService.get('POSTGRES_USER'),
           password: configService.get('POSTGRES_PASSWORD'),
           entities: [Message, Memory, Skill],
-          migrationsRun:
-            configService.get('DATABASE_RUN_MIGRATIONS') === 'true',
+          migrationsRun: true,
+          migrations: [path.join(__dirname, 'migration', '*{.ts,.js}')],
+          cli: { migrationsDir: path.join(__dirname, 'migration') },
         },
     }),
     AuthModule,
