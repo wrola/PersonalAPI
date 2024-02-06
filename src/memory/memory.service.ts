@@ -163,6 +163,10 @@ export interface IMemoryService {
   getEmebed(query: string): Promise<number[]>;
   restoreMemory(queryEmbedding): Promise<Array<unknown>>;
   add(memoryInput: MemoryInput): Promise<Memory>;
-  plan(query: string, actions: any[], context: unknown): Promise<string>;
-  isMemoryReady(): Promise<boolean>; // TODO add checker if qdrant is ready
+  plan<T, K>(
+    query: string,
+    actions: Array<T>,
+    context: Array<K>,
+  ): Promise<string>;
+  isMemoryReady(): Promise<boolean>;
 }

@@ -50,7 +50,7 @@ export class ConversationService {
       const chat = new ChatOpenAI(modelSettings);
       const { content } = await chat.invoke(messages);
 
-      return { content, memories };
+      return { content, memories }; // should we split this not always is necery to return memories?
     } catch (err) {
       throw new BadRequestException(err, 'The OpenAI API Error');
     }

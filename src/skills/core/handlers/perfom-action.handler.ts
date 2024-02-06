@@ -17,6 +17,7 @@ import {
   SystemMessage,
 } from '@langchain/core/messages';
 import { currentDate } from '../../../conversation/conversation.service';
+import { Document } from '@langchain/core/documents';
 
 export class PerformAction implements SkillHandler {
   payload: Record<string, unknown>;
@@ -34,7 +35,8 @@ export class PerformAction implements SkillHandler {
       throw new Error('There is no payload');
     }
 
-    const { query, memories } = this.payload;
+    const query: string = this.payload.query as string;
+    const memories: Array<Document> = this.payload.memories as Array<Document>;
     const embedding = await this.memoryService.getEmebed(query as string);
     const actions = await this.qdrantClient.search(ACTIONS, {
       vector: embedding,
@@ -43,8 +45,8 @@ export class PerformAction implements SkillHandler {
 
     const uuid = await this.memoryService.plan(
       query as string,
-      actions as any[], // TODO add propper type
-      memories as any[], //TODO type memories!
+      actions,
+      memories,
     );
 
     const skill = await this.skillsRepository.findOne(uuid);
@@ -61,10 +63,8 @@ export class PerformAction implements SkillHandler {
       }""" based on what user asks and context below.
         context###
         ${
-          (memories as any[]) && (memories as any[]).length
-            ? (memories as any[])
-                .map((doc: any) => doc[0].pageContent)
-                .join('\n\n')
+          memories && memories.length
+            ? memories.map((doc: any) => doc[0].pageContent).join('\n\n')
             : ''
         }###
 

@@ -42,7 +42,7 @@ export class ConversationController {
       : (conversationId = v4());
 
     Logger.log(`${conversation}`);
-
+    response.setHeader('x-conversation-id', conversationId);
     const { messages, schemas, defaultSchema } =
       this.conversationService.intentRecognition(question);
 
@@ -65,18 +65,21 @@ export class ConversationController {
       Logger.log(`The action result: ${intentType}`);
       this.performAction.setPayload({ query: question, memories });
       await this.performAction.execute();
+
+      return response.json(
+        new OutputConversationDto('The action has taken place', conversationId),
+      );
     }
     const result = await this.conversationService.call(question, conversation, {
       messages,
     });
-
-    response.setHeader('x-conversation-id', conversationId);
 
     await this.conversationService.saveMessage(
       conversationId,
       question,
       result ?? 'No answer.',
     );
+
     Logger.log(`Is there a answer? ${result ? 'Yes' : 'No answer.'}`);
 
     return response.json(

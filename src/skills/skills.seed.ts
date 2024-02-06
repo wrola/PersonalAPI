@@ -46,7 +46,7 @@ export class SkillSeedService {
     learnSkill.setPayload({
       name: Skills.LEARNING,
       description: SkillsDescription.LEARNING,
-      tags: ['memorize', 'memory', 'remember', 'skill'],
+      tags: ['memorize', 'memory', 'learn', 'skill'],
       webhook: 'http://localhost:3000/learn',
       schema: learnSchema,
       id: '8df3d811-d459-4880-b651-7c4d4836b029',
@@ -55,6 +55,7 @@ export class SkillSeedService {
       name: Skills.MEMORY,
       description: SkillsDescription.MEMORY,
       tags: ['memorize', 'memory', 'remember'],
+      webhook: 'http://localhost:3000/memory',
       id: '62075b91-d895-4e61-8a4c-b8b89ff909fb',
     });
 
