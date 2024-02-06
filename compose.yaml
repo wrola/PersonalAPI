@@ -52,7 +52,7 @@ services:
       - REPO_PASS=${REPO_PASS}
     networks:
       - network
-    command: --interval 30
+    command: --interval 43200
 
 networks:
   network:
