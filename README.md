@@ -69,6 +69,12 @@ or
 docker pull postgres:latest
 docker run -p 5433:5433 -v $(pwd)/postgres:/data/postgres postgres:latest
 ```
+or just run all services locally via docker compose 
+
+```bash
+# Pull all images locally and run it in docker compose network
+docker compose up
+```
 
 ## Resources
 
