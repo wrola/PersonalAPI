@@ -17,6 +17,7 @@ import {
 } from './infrastructure/memory.repository';
 import { Memory } from './core/entities/memory.entity';
 import { INIT_MEMORY, InitialMemory } from './init-memory.service';
+import { MemoryController } from './api/memory.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Message, Memory]), ConfigModule],
@@ -60,6 +61,7 @@ import { INIT_MEMORY, InitialMemory } from './init-memory.service';
       inject: [MEMORY_SERVICE],
     },
   ],
+  controllers: [MemoryController],
   exports: [MESSAGE_REPOSITORY, MEMORY_SERVICE, QDRANT_CLIENT],
 })
 export class MemoryModule {}

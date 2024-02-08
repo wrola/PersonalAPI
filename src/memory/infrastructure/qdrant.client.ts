@@ -37,21 +37,18 @@ export const initVectorStore = async (qdrant) => {
     );
 
     if (!memories) {
-      Logger.log('No memories Honey, creating place for memories', 'SKILLS');
       await qdrant.createCollection(MEMORIES, {
         vectors: { size: 1536, distance: 'Cosine', on_disk: true },
       });
-      Logger.log('Memories are initialize', 'SKILLS');
+      Logger.log('Memory is ready', 'MEMORY');
     }
+
     if (!actions) {
-      Logger.log('I cant do shit, no space for actions', 'SKILLS');
       await qdrant.createCollection(ACTIONS, {
         vectors: { size: 1536, distance: 'Cosine', on_disk: true },
       });
-      Logger.log('I am not longer handicapped', 'SKILLS');
+      Logger.log('I am ready for learning new skills', 'SKILLS');
     }
-
-    Logger.log('Ready for settting up initial skills', 'SKILLS');
   } catch (err) {
     Logger.error(`During qdrant initialization + ${err}`, 'SKILLS');
   }

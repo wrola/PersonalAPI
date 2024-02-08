@@ -7,9 +7,8 @@ import { MemoryInputDto } from './dto/memory-input.dto';
 export class MemoryController {
   constructor(@Inject(MEMORY_SERVICE) private memoryService: IMemoryService) {}
 
-  @Post('/memory')
+  @Post('/memories')
   async learn(@Body() body: MemoryInputDto): Promise<MemoryOutputDto> {
-    // TODO create tags and name if there not present
     return await this.memoryService.add(body);
   }
 }

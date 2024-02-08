@@ -107,7 +107,7 @@ export class MemoryService implements IMemoryService {
         ]),
       });
     }
-    // TODO RETHINK FLOW OF MEMORIZE!
+
     const results = await Promise.all(
       checks.map(async (check: any) => check.rank),
     );
@@ -123,6 +123,7 @@ export class MemoryService implements IMemoryService {
       ),
     );
   }
+
   async plan(query: string, actions: any[], context: any[]): Promise<string> {
     const model = new ChatOpenAI({
       modelName: 'gpt-4-1106-preview',
@@ -150,6 +151,7 @@ export class MemoryService implements IMemoryService {
 
     return uuid as string;
   }
+
   async isMemoryReady(): Promise<boolean> {
     const collectionsState = await this.qdrantClient.getCollection();
 

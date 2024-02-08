@@ -64,7 +64,7 @@ export class PerformAction implements SkillHandler {
         context###
         ${
           memories && memories.length
-            ? memories.map((doc: any) => doc[0].pageContent).join('\n\n')
+            ? memories.map((doc: any) => doc.payload.pageContent).join('\n\n')
             : ''
         }###
 
@@ -73,56 +73,54 @@ export class PerformAction implements SkillHandler {
       new HumanMessage(query as string),
     ];
 
-    const chat = new ChatOpenAI({
-      modelName: 'gpt-4-1106-preview',
-      temperature: 0.7,
-    });
-
-    if (skill.schema) {
-      chat.bind({
-        functions: [skill.schema],
-        function_call: { name: skill.name } || undefined,
-      });
-    }
+    const chat = skill.schema
+      ? new ChatOpenAI({ modelName: 'gpt-4' }).bind({
+          functions: [skill.schema],
+          function_call: { name: skill.name },
+        })
+      : new ChatOpenAI({ modelName: 'gpt-4' });
 
     const content = await chat.invoke(messages);
-    const result = skill.schema
-      ? this._parseFunctionCall(content)
-      : { args: content.content };
+    const result = this._parseFunctionCall(content);
 
     if (skill.webhook) {
       try {
+        const body = JSON.stringify(result.args);
         const response = await fetch(skill.webhook, {
           method: 'POST',
-          body: JSON.stringify(result.args),
-          headers: { 'Content-Type': 'application/json' },
+          body,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': JSON.parse(process.env.API_KEYS)[0], // TODO remove
+          },
         });
 
-        Logger.log(`The result of ${skill.name}, is   ${response.json()}`);
+        Logger.log(`The result of ${skill.name}, is   ${response.status}`);
+        return;
       } catch (err) {
         Logger.error(
           `the action: ${skill.name}, Remote action failed. with error status: ${err.status}`,
         );
       }
     }
-
-    Logger.log({
-      action: skill.name,
-      data: 'Memory added',
-      status: 'success',
-    });
   }
 
   private _parseFunctionCall = (
     result: BaseMessageChunk,
   ): { name: string; args: any } | null => {
     if (result?.additional_kwargs?.function_call === undefined) {
-      return null;
+      return {
+        args: result.content,
+        name: null,
+      };
     }
 
     return {
       name: result.additional_kwargs.function_call.name,
-      args: JSON.parse(result.additional_kwargs.function_call.arguments),
+      args: {
+        ...JSON.parse(result.additional_kwargs.function_call.arguments),
+        reflection: 'self-reflection',
+      },
     };
   };
 }
