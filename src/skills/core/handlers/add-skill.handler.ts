@@ -55,7 +55,7 @@ export class AddSkillHandler implements SkillHandler {
           wait: true,
           batch: {
             ids: [documentedMemory.metadata.uuid],
-            payloads: [documentedMemory], //TODO checkout the way now the skills are kept in DB? qdrant?
+            payloads: [documentedMemory],
             vectors: [embedding],
           },
         });
