@@ -12,8 +12,6 @@ import { InputConversationDto } from './dto/input-conversation.dto';
 import { v4 } from 'uuid';
 import { OutputConversationDto } from './dto/output-conversation.dto';
 import { Response } from 'express';
-import { InputLearnDto } from '../../skills/api/dto/input-learn.dto';
-import { OutputLearnDto } from '../../skills/api/dto/output-learn.dto';
 import {
   PERFORM_ACTION,
   PerformAction,
@@ -85,14 +83,5 @@ export class ConversationController {
     return response.json(
       new OutputConversationDto(result as string, conversationId),
     );
-  }
-
-  @Post('/learn')
-  async learn(
-    @Body() body: InputLearnDto,
-    @Res() response: Response,
-  ): Promise<Response<OutputLearnDto>> {
-    await console.log(body);
-    return response.json(new OutputLearnDto());
   }
 }

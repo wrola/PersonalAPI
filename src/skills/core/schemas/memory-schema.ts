@@ -1,6 +1,6 @@
 import { Skills } from '../skills';
 
-export const learnSchema = {
+export const memorySchema = {
   name: Skills.MEMORY,
   description:
     "This is a skill that allows me to memorize things and I'll choose it if I want to memorize something.",

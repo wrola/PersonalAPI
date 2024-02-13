@@ -9,7 +9,7 @@ import {
   IQdrantClient,
   QDRANT_CLIENT,
 } from '../memory/infrastructure/qdrant.client';
-import { learnSchema } from './core/schemas/learn-schema';
+import { memorySchema } from './core/schemas/memory-schema';
 
 export const SKILLS_SEED_SERVICE = Symbol('SKILLS_SEED_SERVICE');
 
@@ -38,29 +38,19 @@ export class SkillSeedService {
   }
 
   async addInitialSkills() {
-    const [learnSkill, memorySkill] = [
-      new AddSkillHandler(this.repository, this.qdrantClient),
-      new AddSkillHandler(this.repository, this.qdrantClient),
-    ];
+    const memorySkill = new AddSkillHandler(this.repository, this.qdrantClient);
 
-    learnSkill.setPayload({
-      name: Skills.LEARNING,
-      description: SkillsDescription.LEARNING,
-      tags: ['memorize', 'memory', 'learn', 'skill'],
-      webhook: 'http://localhost:3000/learn',
-      id: '8df3d811-d459-4880-b651-7c4d4836b029',
-    });
     memorySkill.setPayload({
       name: Skills.MEMORY,
       description: SkillsDescription.MEMORY,
       tags: ['memorize', 'memory', 'remember'],
       webhook: 'http://localhost:3000/memories',
       id: '62075b91-d895-4e61-8a4c-b8b89ff909fb',
-      schema: learnSchema,
+      schema: memorySchema,
     });
 
     return Promise.all(
-      [learnSkill, memorySkill].map(async (skill) => {
+      [memorySkill].map(async (skill) => {
         await skill.execute();
       }),
     );
