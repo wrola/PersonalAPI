@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OpenAIEmbeddings } from '@langchain/openai';
 import { QdrantClient } from '@qdrant/js-client-rest';
@@ -16,11 +17,17 @@ import {
   MemorySqlRepository,
 } from './infrastructure/memory.repository';
 import { Memory } from './core/entities/memory.entity';
-import { INIT_MEMORY, InitialMemory } from './init-memory.service';
 import { MemoryController } from './api/memory.controller';
+import { AddMemoryCommandHandler } from './core/commands/add-memory.comand';
+
+const CommandHandlers = [AddMemoryCommandHandler];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message, Memory]), ConfigModule],
+  imports: [
+    TypeOrmModule.forFeature([Message, Memory]),
+    ConfigModule,
+    CqrsModule,
+  ],
   providers: [
     {
       provide: MESSAGE_REPOSITORY,
@@ -52,14 +59,16 @@ import { MemoryController } from './api/memory.controller';
       provide: MEMORY_SERVICE,
       useClass: MemoryService,
     },
-    {
-      provide: INIT_MEMORY,
-      useFactory: async (service) => {
-        const memoryService = new InitialMemory(service);
-        await memoryService.load();
-      },
-      inject: [MEMORY_SERVICE],
-    },
+    // { // TODO make it working on startup
+    //   provide: INIT_MEMORY,
+    //   useFactory: async (commandBus) => {
+    //     const initMemory = await new InitialMemory(commandBus);
+    //     initMemory.load();
+    //     return initMemory;
+    //   },
+    //   inject: [CommandBus],
+    // },
+    ...CommandHandlers,
   ],
   controllers: [MemoryController],
   exports: [MESSAGE_REPOSITORY, MEMORY_SERVICE, QDRANT_CLIENT],

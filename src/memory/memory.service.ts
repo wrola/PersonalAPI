@@ -1,9 +1,9 @@
 import { ImATeapotException, Inject, Injectable, Logger } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
 import {
   IMemoryRepository,
   MEMORY_REPOSITORY,
 } from './infrastructure/memory.repository';
-import { Memory, MemoryInput } from './core/entities/memory.entity';
 import { Document } from '@langchain/core/documents';
 import {
   IQdrantClient,
@@ -22,6 +22,7 @@ import { currentDate } from '../conversation/conversation.service';
 @Injectable()
 export class MemoryService implements IMemoryService {
   constructor(
+    private readonly commandBus: CommandBus,
     @Inject(MEMORY_REPOSITORY)
     private memoryRepository: IMemoryRepository,
     @Inject(QDRANT_CLIENT)
@@ -29,38 +30,6 @@ export class MemoryService implements IMemoryService {
     @Inject(EMBEDDING_PRODUCER)
     private embeddingProducer: IEmbeddingProducer,
   ) {}
-  async add(memoryInput: MemoryInput): Promise<Memory> {
-    const newMemory = Memory.create(memoryInput);
-    const documentedMemory = new Document({
-      pageContent: newMemory.content,
-      metadata: {
-        uuid: newMemory.id,
-        name: newMemory.name,
-      },
-    });
-
-    const [embedding] = await this.embeddingProducer.embedDocuments([
-      documentedMemory.pageContent,
-    ]);
-
-    if (!embedding) {
-      return;
-    }
-
-    await Promise.all([
-      this.memoryRepository.save(newMemory),
-      this.qdrantClient.upsert(MEMORIES, {
-        wait: true,
-        batch: {
-          ids: [documentedMemory.metadata.uuid],
-          vectors: [embedding],
-          payloads: [documentedMemory],
-        },
-      }),
-    ]);
-
-    return newMemory;
-  }
   async restoreMemory(query: string): Promise<Array<Document>> {
     const queryEmbedding = await this.getEmebed(query);
     const documentedMemories = await this.qdrantClient.search(MEMORIES, {
@@ -164,7 +133,6 @@ export const MEMORY_SERVICE = Symbol('MEMORY_SERVICE');
 export interface IMemoryService {
   getEmebed(query: string): Promise<number[]>;
   restoreMemory(queryEmbedding): Promise<Array<unknown>>;
-  add(memoryInput: MemoryInput): Promise<Memory>;
   plan<T, K>(
     query: string,
     actions: Array<T>,
