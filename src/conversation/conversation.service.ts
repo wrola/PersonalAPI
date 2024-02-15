@@ -11,6 +11,7 @@ import {
   HumanMessage,
   SystemMessage,
 } from '@langchain/core/messages';
+import { Content } from './domain/content.interface';
 
 @Injectable()
 export class ConversationService {
@@ -23,7 +24,10 @@ export class ConversationService {
     question: string,
     conversation: any,
     context: any,
-  ): Promise<unknown> {
+  ): Promise<{
+    content: Content;
+    memories: Array<unknown>; // TODO should we return all memories?
+  }> {
     try {
       const memories = await this.memoryService.restoreMemory(question);
 
@@ -50,7 +54,7 @@ export class ConversationService {
       const chat = new ChatOpenAI(modelSettings);
       const { content } = await chat.invoke(messages);
 
-      return { content, memories }; // should we split this not always is necery to return memories?
+      return { content, memories };
     } catch (err) {
       throw new BadRequestException(err, 'The OpenAI API Error');
     }

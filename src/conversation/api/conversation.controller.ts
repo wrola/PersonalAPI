@@ -65,7 +65,10 @@ export class ConversationController {
       await this.performAction.execute();
 
       return response.json(
-        new OutputConversationDto('The action has taken place', conversationId),
+        new OutputConversationDto(
+          { content: 'The action has taken place', memories },
+          conversationId,
+        ),
       );
     }
     const result = await this.conversationService.call(question, conversation, {
@@ -80,8 +83,6 @@ export class ConversationController {
 
     Logger.log(`Is there a answer? ${result ? 'Yes' : 'No answer.'}`);
 
-    return response.json(
-      new OutputConversationDto(result as string, conversationId),
-    );
+    return response.json(new OutputConversationDto(result, conversationId));
   }
 }
