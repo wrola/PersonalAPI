@@ -37,10 +37,10 @@ export class Memory {
   }
 }
 
-export type MemoryInput = {
+export interface MemoryInput {
   content: string;
   name: string;
   tags: Array<string>;
   reflection?: string;
   id?: string;
-};
+}
