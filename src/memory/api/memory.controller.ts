@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { MemoryOutputDto } from './dto/memory-output.dto';
 import { MemoryInputDto } from './dto/memory-input.dto';
-import { AddMemoryCommand } from '../core/commands/add-memory.comand';
+import { AddMemoryCommand } from '../core/commands/add-memory.command';
 
 @Controller()
 export class MemoryController {

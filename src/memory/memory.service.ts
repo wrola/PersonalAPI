@@ -30,6 +30,7 @@ export class MemoryService implements IMemoryService {
     @Inject(EMBEDDING_PRODUCER)
     private embeddingProducer: IEmbeddingProducer,
   ) {}
+
   async restoreMemory(query: string): Promise<Array<Document>> {
     const queryEmbedding = await this.getEmebed(query);
     const documentedMemories = await this.qdrantClient.search(MEMORIES, {

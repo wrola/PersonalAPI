@@ -18,7 +18,8 @@ import {
 } from './infrastructure/memory.repository';
 import { Memory } from './core/entities/memory.entity';
 import { MemoryController } from './api/memory.controller';
-import { AddMemoryCommandHandler } from './core/commands/add-memory.comand';
+import { AddMemoryCommandHandler } from './core/commands/add-memory.command';
+import { INIT_MEMORY, InitialMemory } from './init-memory.service';
 
 const CommandHandlers = [AddMemoryCommandHandler];
 
@@ -59,15 +60,10 @@ const CommandHandlers = [AddMemoryCommandHandler];
       provide: MEMORY_SERVICE,
       useClass: MemoryService,
     },
-    // { // TODO make it working on startup
-    //   provide: INIT_MEMORY,
-    //   useFactory: async (commandBus) => {
-    //     const initMemory = await new InitialMemory(commandBus);
-    //     initMemory.load();
-    //     return initMemory;
-    //   },
-    //   inject: [CommandBus],
-    // },
+    {
+      provide: INIT_MEMORY,
+      useClass: InitialMemory,
+    },
     ...CommandHandlers,
   ],
   controllers: [MemoryController],
