@@ -24,7 +24,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@langchain/core": "^0.1.23",
+    "@langchain/core": "^0.1.27",
     "@langchain/openai": "^0.0.14",
     "@nestjs/axios": "^3.0.1",
     "@nestjs/common": "^10.2.10",
