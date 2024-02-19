@@ -7,7 +7,6 @@ import {
 } from './infrastrucutre/skills.repository';
 import { SKILLS_SEED_SERVICE, SkillSeedService } from './skills.seed';
 import { Skill } from './core/skill.entity';
-import { QDRANT_CLIENT } from '../memory/infrastructure/qdrant.client';
 import {
   PERFORM_ACTION,
   PerformAction,
