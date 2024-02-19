@@ -40,30 +40,19 @@ export class InitialMemory implements OnModuleInit {
         const [embedding] = await this.embeddingProducer.embedDocuments([
           documentedMemory.pageContent,
         ]);
-        if (!embedding) {
-          return;
-        }
-        await this.memoryRepository.save(newMemory),
-          await this.qdrantClient.upsert(MEMORIES, {
-            wait: true,
-            batch: {
-              ids: [documentedMemory.metadata.uuid],
-              vectors: [embedding],
-              payloads: [documentedMemory],
-            },
-          });
+        await this.memoryRepository.save(newMemory);
+        await this.qdrantClient.upsert(MEMORIES, {
+          wait: true,
+          batch: {
+            ids: [documentedMemory.metadata.uuid],
+            vectors: [embedding],
+            payloads: [documentedMemory],
+          },
+        });
       }),
     );
-    await Logger.log('Init memories added');
+    Logger.log('Init memories added', 'MEMORY');
   }
-
-  // async load() {
-  //   const { content, name, tags, reflection, id } = defaultMemories[0];
-  //   this.commandBus.execute(
-  //     new AddMemoryCommand(content, name, tags, reflection, id),
-  //   ),
-  //     await Logger.log('Init memories added');
-  // }
 }
 export const defaultMemories: Array<MemoryInput> = [
   {

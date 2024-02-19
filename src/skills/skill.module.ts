@@ -22,13 +22,7 @@ import {
     },
     {
       provide: SKILLS_SEED_SERVICE,
-      useFactory: async (skillsRepository, qdrantClient) => {
-        const skillSeed = new SkillSeedService(skillsRepository, qdrantClient);
-        await skillSeed.initializeSkills();
-
-        return skillSeed;
-      },
-      inject: [SKILLS_REPOSITORY, QDRANT_CLIENT],
+      useClass: SkillSeedService,
     },
     {
       provide: PERFORM_ACTION,
