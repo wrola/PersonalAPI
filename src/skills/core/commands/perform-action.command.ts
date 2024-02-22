@@ -9,7 +9,6 @@ import {
   ISkillsRepository,
   SKILLS_REPOSITORY,
 } from '../../infrastrucutre/skills.repository';
-import { SkillHandler } from './skill.handler';
 import { Inject, Logger } from '@nestjs/common';
 import {
   BaseMessageChunk,
@@ -18,25 +17,27 @@ import {
 } from '@langchain/core/messages';
 import { currentDate } from '../../../conversation/conversation.service';
 import { Document } from '@langchain/core/documents';
+import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
 
-export class PerformAction implements SkillHandler {
-  payload: Record<string, unknown>;
+export class PerformActionCommand implements ICommand {
+  constructor(
+    public readonly query: string,
+    public readonly memories: Array<Document>,
+  ) {}
+}
 
+@CommandHandler(PerformActionCommand)
+export class PerformActionHandler
+  implements ICommandHandler<PerformActionCommand>
+{
   constructor(
     @Inject(QDRANT_CLIENT) private qdrantClient: IQdrantClient,
     @Inject(SKILLS_REPOSITORY) private skillsRepository: ISkillsRepository,
     @Inject(MEMORY_SERVICE) private memoryService: IMemoryService,
   ) {}
-  setPayload(payload: Record<string, unknown>): void {
-    this.payload = payload;
-  }
-  async execute(): Promise<void> {
-    if (!this.payload) {
-      throw new Error('There is no payload');
-    }
 
-    const query: string = this.payload.query as string;
-    const memories: Array<Document> = this.payload.memories as Array<Document>;
+  async execute(command: PerformActionCommand): Promise<void> {
+    const { query, memories } = command;
     const embedding = await this.memoryService.getEmebed(query as string);
     const actions = await this.qdrantClient.search(ACTIONS, {
       vector: embedding,
@@ -124,5 +125,3 @@ export class PerformAction implements SkillHandler {
     };
   };
 }
-
-export const PERFORM_ACTION = Symbol('PERFORM_ACTION');

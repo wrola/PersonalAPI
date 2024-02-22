@@ -1,5 +1,4 @@
 import { Inject, Logger } from '@nestjs/common';
-import { SkillHandler } from './skill.handler';
 import {
   SKILLS_REPOSITORY,
   ISkillsRepository,
@@ -12,28 +11,33 @@ import {
 } from '../../../memory/infrastructure/qdrant.client';
 import { Document } from '@langchain/core/documents';
 import { OpenAIEmbeddings } from '@langchain/openai';
+import { CommandHandler, ICommand, ICommandHandler } from '@nestjs/cqrs';
 
-export class AddSkillHandler implements SkillHandler {
-  payload: Record<string, unknown>;
+export class AddSkillCommand implements ICommand {
+  constructor(
+    public readonly name,
+    public readonly description,
+    public readonly webhook?,
+    public readonly tags?,
+    public readonly schema?,
+    public readonly synced?,
+  ) {}
+}
+
+@CommandHandler(AddSkillCommand)
+export class AddSkillHandler implements ICommandHandler<AddSkillCommand, void> {
   constructor(
     @Inject(SKILLS_REPOSITORY) readonly skillRepository: ISkillsRepository,
     @Inject(QDRANT_CLIENT) readonly qdrantClient: IQdrantClient,
   ) {}
-  setPayload(payload: Record<string, unknown>): void {
-    this.payload = payload;
-  }
-  async execute(): Promise<void> {
-    if (!this.payload) {
-      throw new Error('Payload is not set');
-    }
-    const { name, description, synced = false } = this.payload;
+  async execute(command: AddSkillCommand): Promise<void> {
+    const { name, description, synced = false } = command;
     const skill = Skill.create(
       name,
       description,
-      this.payload?.webhook,
-      this.payload?.tags,
-      this.payload?.schema,
-      this.payload?.id,
+      command?.webhook,
+      command?.tags,
+      command?.schema,
     );
     await this.skillRepository.save(skill);
 

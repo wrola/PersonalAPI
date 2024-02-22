@@ -1,27 +1,17 @@
-import {
-  Body,
-  Controller,
-  Headers,
-  Inject,
-  Logger,
-  Post,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Headers, Logger, Post, Res } from '@nestjs/common';
 import { ConversationService } from '../conversation.service';
 import { InputConversationDto } from './dto/input-conversation.dto';
 import { v4 } from 'uuid';
 import { OutputConversationDto } from './dto/output-conversation.dto';
 import { Response } from 'express';
-import {
-  PERFORM_ACTION,
-  PerformAction,
-} from '../../skills/core/handlers/perfom-action.handler';
+import { CommandBus } from '@nestjs/cqrs';
+import { PerformActionCommand } from '../../skills/core/commands/perform-action.command';
 
 @Controller()
 export class ConversationController {
   constructor(
     private readonly conversationService: ConversationService,
-    @Inject(PERFORM_ACTION) private readonly performAction: PerformAction,
+    private readonly commandBus: CommandBus,
   ) {}
   @Post('/talk')
   async conversation(
@@ -61,8 +51,9 @@ export class ConversationController {
 
     if (intentType === 'action') {
       Logger.log(`The action result: ${intentType}`);
-      this.performAction.setPayload({ query: question, memories });
-      await this.performAction.execute();
+      await this.commandBus.execute(
+        new PerformActionCommand(question, memories),
+      ); // todo should it work? 
 
       return response.json(
         new OutputConversationDto(

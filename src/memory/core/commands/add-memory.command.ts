@@ -26,7 +26,7 @@ export class AddMemoryCommand implements ICommand {
   ) {}
 }
 
-@CommandHandler(AddMemoryCommand) // make it into return DTO?
+@CommandHandler(AddMemoryCommand)
 export class AddMemoryCommandHandler
   implements ICommandHandler<AddMemoryCommand, Memory>
 {

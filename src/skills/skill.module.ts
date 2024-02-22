@@ -7,10 +7,10 @@ import {
 } from './infrastrucutre/skills.repository';
 import { SKILLS_SEED_SERVICE, SkillSeedService } from './skills.seed';
 import { Skill } from './core/skill.entity';
-import {
-  PERFORM_ACTION,
-  PerformAction,
-} from './core/handlers/perfom-action.handler';
+import { PerformActionHandler } from './core/commands/perform-action.command';
+import { AddSkillHandler } from './core/commands/add-skill.command';
+
+const CommandHandlers = [PerformActionHandler, AddSkillHandler];
 
 @Module({
   imports: [MemoryModule, TypeOrmModule.forFeature([Skill])],
@@ -23,11 +23,8 @@ import {
       provide: SKILLS_SEED_SERVICE,
       useClass: SkillSeedService,
     },
-    {
-      provide: PERFORM_ACTION,
-      useClass: PerformAction,
-    },
+    ...CommandHandlers,
   ],
-  exports: [PERFORM_ACTION],
+  exports: [],
 })
 export class SkillModule {}
