@@ -26,7 +26,7 @@ export class AddMemoryCommand implements ICommand {
   ) {}
 }
 
-@CommandHandler(AddMemoryCommand) // make it into return DTO?
+@CommandHandler(AddMemoryCommand)
 export class AddMemoryCommandHandler
   implements ICommandHandler<AddMemoryCommand, Memory>
 {
@@ -38,6 +38,7 @@ export class AddMemoryCommandHandler
     @Inject(EMBEDDING_PRODUCER)
     private embeddingProducer: IEmbeddingProducer,
   ) {}
+
   async execute(command: AddMemoryCommand): Promise<any> {
     const newMemory = Memory.create(command);
     const documentedMemory = new Document({

@@ -20,56 +20,57 @@ export class SkillSeedService implements OnModuleInit {
     @InjectRepository(Skill) private repository: ISkillsRepository,
     @Inject(QDRANT_CLIENT) private qdrantClient: IQdrantClient,
   ) {}
+
   async onModuleInit() {
-    Logger.log('Start adding initila skills', 'SKILLS');
+    Logger.log('Start adding initial skills', 'SKILLS');
     return await this.addInitialSkills();
   }
 
   async addInitialSkills() {
     return Promise.all(
-      InitSkills.map(async (skill) => {
-        const { name, description, webhook, tags, schema, id } = skill;
-        const newSkill = Skill.create(
-          name,
-          description,
-          webhook,
-          tags,
-          schema,
-          id,
-        );
-        const embeddings = new OpenAIEmbeddings({ maxConcurrency: 5 });
-        const [embedding] = await embeddings.embedDocuments([
-          skill.name + ': ' + skill.description,
-        ]);
-        const documentedSkill = new Document({
-          pageContent: skill.name + ': ' + skill.description,
-          metadata: {
-            uuid: skill.id,
-            name: skill.name,
-            content: `${skill.name}: ${skill.description}`,
-          },
-        });
+      InitSkills.map(
+        async ({ name, description, webhook, tags, schema, id }) => {
+          const newSkill = Skill.create(
+            name,
+            description,
+            webhook,
+            tags,
+            schema,
+            id,
+          );
 
-        await this.repository.save(newSkill);
+          const documentedSkill = new Document({
+            pageContent: name + ': ' + description,
+            metadata: {
+              uuid: id,
+              name: name,
+              content: `${name}: ${description}`,
+            },
+          });
 
-        try {
-          return await Promise.all([
-            this.repository.save(newSkill),
-            this.qdrantClient.upsert(ACTIONS, {
-              wait: true,
-              batch: {
-                ids: [documentedSkill.metadata.uuid],
-                payloads: [documentedSkill],
-                vectors: [embedding],
-              },
-            }),
+          const embeddings = new OpenAIEmbeddings({ maxConcurrency: 5 });
+          const [embedding] = await embeddings.embedDocuments([
+            name + ': ' + description,
           ]);
 
+          try {
+            return await Promise.all([
+              this.repository.save(newSkill),
+              this.qdrantClient.upsert(ACTIONS, {
+                wait: true,
+                batch: {
+                  ids: [documentedSkill.metadata.uuid],
+                  payloads: [documentedSkill],
+                  vectors: [embedding],
+                },
+              }),
+            ]);
+          } catch (err) {
+            Logger.error(err, 'SKILLS');
+          }
           Logger.log('The skill added to qdrant', 'SKILLS');
-        } catch (err) {
-          Logger.error(err, 'SKILLS');
-        }
-      }),
+        },
+      ),
     );
   }
 }
