@@ -51,13 +51,17 @@ export class ConversationController {
 
     if (intentType === 'action') {
       Logger.log(`The action result: ${intentType}`);
-      await this.commandBus.execute(
+      const actionResult = await this.commandBus.execute(
         new PerformActionCommand(question, memories),
-      ); // todo should it work? 
-
+      );
       return response.json(
         new OutputConversationDto(
-          { content: 'The action has taken place', memories },
+          {
+            content: `${
+              actionResult ? actionResult : 'The action has taken place'
+            }`,
+            memories,
+          },
           conversationId,
         ),
       );

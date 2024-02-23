@@ -38,6 +38,7 @@ export class AddMemoryCommandHandler
     @Inject(EMBEDDING_PRODUCER)
     private embeddingProducer: IEmbeddingProducer,
   ) {}
+
   async execute(command: AddMemoryCommand): Promise<any> {
     const newMemory = Memory.create(command);
     const documentedMemory = new Document({

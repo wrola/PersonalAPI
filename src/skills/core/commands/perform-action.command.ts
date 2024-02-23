@@ -36,7 +36,7 @@ export class PerformActionHandler
     @Inject(MEMORY_SERVICE) private memoryService: IMemoryService,
   ) {}
 
-  async execute(command: PerformActionCommand): Promise<void> {
+  async execute(command: PerformActionCommand): Promise<string | void> {
     const { query, memories } = command;
     const embedding = await this.memoryService.getEmebed(query as string);
     const actions = await this.qdrantClient.search(ACTIONS, {
@@ -97,7 +97,7 @@ export class PerformActionHandler
         });
 
         Logger.log(`The result of ${skill.name}, is   ${response.status}`);
-        return;
+        return result.args.content;
       } catch (err) {
         Logger.error(
           `the action: ${skill.name}, Remote action failed. with error status: ${err.status}`,
