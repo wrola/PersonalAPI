@@ -60,7 +60,6 @@ export class ConversationController {
             content: `${
               actionResult ? actionResult : 'The action has taken place'
             }`,
-            memories,
           },
           conversationId,
         ),
@@ -78,6 +77,11 @@ export class ConversationController {
 
     Logger.log(`Is there a answer? ${result ? 'Yes' : 'No answer.'}`);
 
-    return response.json(new OutputConversationDto(result, conversationId));
+    return response.json(
+      new OutputConversationDto(
+        { content: result.content as string },
+        conversationId,
+      ),
+    );
   }
 }

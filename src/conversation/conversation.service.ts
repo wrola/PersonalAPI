@@ -26,7 +26,7 @@ export class ConversationService {
     context: any,
   ): Promise<{
     content: Content;
-    memories: Array<unknown>; // TODO should we return all memories?
+    memories: Array<unknown>;
   }> {
     try {
       const memories = await this.memoryService.restoreMemory(question);

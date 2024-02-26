@@ -1,6 +1,6 @@
 export class OutputConversationDto {
   constructor(
-    private answer: Record<string, unknown>,
+    private answer: { content: string },
     private conversationId: string,
   ) {}
 }
