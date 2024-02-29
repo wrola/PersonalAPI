@@ -2,10 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-
+import { GenericContainer, StartedTestContainer } from 'testcontainers';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-
+  let startedContainer: StartedTestContainer;
+  beforeAll(async () => {
+    startedContainer = await new GenericContainer('alpine').start();
+  });
+  afterAll(async () => {
+    await startedContainer.stop();
+  });
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
