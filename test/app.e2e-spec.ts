@@ -14,8 +14,10 @@ describe('AppController (e2e)', () => {
 
   beforeAll(async () => {
     console.log(await fsPromise.readdir(path.resolve(__dirname, '..')));
+    console.log(path.resolve(__dirname, '..') + '/');
+    console.log(path.resolve(__dirname, '..'));
     environment = await new DockerComposeEnvironment(
-      path.resolve(__dirname, '..'),
+      path.resolve(__dirname, '..') + '/',
       'compose.test.yaml',
     )
       .withBuild()
