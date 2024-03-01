@@ -13,7 +13,7 @@ describe('AppController (e2e)', () => {
 
   beforeAll(async () => {
     environment = await new DockerComposeEnvironment(
-      process.cwd(),
+      './github/workspace/',
       'compose.test.yaml',
     )
       .withBuild()
