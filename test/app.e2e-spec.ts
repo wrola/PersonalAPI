@@ -6,16 +6,16 @@ import {
   DockerComposeEnvironment,
   StartedDockerComposeEnvironment,
 } from 'testcontainers';
+import path = require('path');
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let environment: StartedDockerComposeEnvironment;
 
   beforeAll(async () => {
-    environment = await new DockerComposeEnvironment(
-      './github/workspace/',
-      'compose.test.yaml',
-    )
+    console.log(process.env.PWD);
+    console.log(path.resolve(__dirname, 'compose.test'));
+    environment = await new DockerComposeEnvironment('./', 'compose.test.yaml')
       .withBuild()
       .up();
   });
