@@ -7,12 +7,13 @@ import {
   StartedDockerComposeEnvironment,
 } from 'testcontainers';
 import path = require('path');
+import * as fsPromise from 'node:fs/promises';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let environment: StartedDockerComposeEnvironment;
 
   beforeAll(async () => {
-    console.log(path.resolve(__dirname, '..'));
+    console.log(await fsPromise.readdir(path.resolve(__dirname, '..')));
     environment = await new DockerComposeEnvironment(
       path.resolve(__dirname, '..'),
       'compose.test.yaml',
