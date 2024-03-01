@@ -2,16 +2,25 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { GenericContainer, StartedTestContainer } from 'testcontainers';
+import {
+  DockerComposeEnvironment,
+  StartedDockerComposeEnvironment,
+} from 'testcontainers';
+
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-  let startedContainer: StartedTestContainer;
+  let environment: StartedDockerComposeEnvironment;
+
   beforeAll(async () => {
-    startedContainer = await new GenericContainer('alpine').start();
+    environment = await new DockerComposeEnvironment('./', 'compose.test.yaml')
+      .withBuild()
+      .up();
   });
+
   afterAll(async () => {
-    await startedContainer.stop();
+    await environment.down();
   });
+
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],

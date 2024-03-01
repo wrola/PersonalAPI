@@ -11,7 +11,7 @@ env:
   POSTGRES_PORT: 5433
   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
   API_KEYS: '["wrt42Ri4"]'
-  QDRANT_URL: http://localhost:6333
+  QDRANT_URL: http://localhost:6334
 
 jobs:
   build:
