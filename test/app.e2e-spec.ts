@@ -12,7 +12,6 @@ describe('AppController (e2e)', () => {
   let environment: StartedDockerComposeEnvironment;
 
   beforeAll(async () => {
-    console.log(path.resolve(__dirname, '..') + '/');
     const pathToCompose = path.resolve(__dirname, '..') + '/';
     environment = await new DockerComposeEnvironment(
       pathToCompose,

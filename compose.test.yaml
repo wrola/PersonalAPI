@@ -7,9 +7,8 @@ services:
       - "6334:6333"
     volumes:
       - qdrant_storage:/qdrant/storage
-    env_file:
-      - .env
-    networks:
+    environment:
+      - QDRANT_URL=${QDRANT_URL}
       - network
 
   postgres_db:
@@ -20,8 +19,12 @@ services:
       - "5433:5432"
     volumes:
       - postgres:/data/postgres
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE_TYPE=${DATABASE_TYPE}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
     networks:
       - network
 
