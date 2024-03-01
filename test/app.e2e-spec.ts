@@ -13,9 +13,12 @@ describe('AppController (e2e)', () => {
   let environment: StartedDockerComposeEnvironment;
 
   beforeAll(async () => {
-    console.log(process.env.PWD);
-    console.log(path.resolve(__dirname, 'compose.test'));
-    environment = await new DockerComposeEnvironment('./', 'compose.test.yaml')
+    console.log(`${process.env.PWD}/`);
+    console.log(path.resolve(__dirname, 'compose.test.yaml'));
+    environment = await new DockerComposeEnvironment(
+      `${process.env.PWD}/`,
+      'compose.test.yaml',
+    )
       .withBuild()
       .up();
   });
