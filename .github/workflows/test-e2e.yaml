@@ -23,7 +23,7 @@ jobs:
         node-version: [20.9.0]
 
     # Service containers to run with `container-job`
-    services:
+    # services:
       # Label used to access the service container
       # postgres:
       #   # Docker Hub image
@@ -65,8 +65,8 @@ jobs:
       - name: Install packages
         run: npm ci
 
-      - name: Build application
-        run: npm run build
+      # - name: Build application
+      #   run: npm run build
 
       # - name: Run migrations
       #   run: npm run migration:run
