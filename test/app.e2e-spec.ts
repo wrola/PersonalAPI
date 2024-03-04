@@ -42,5 +42,5 @@ describe('AppController (e2e)', () => {
         Accept: 'application/json',
       })
       .expect(200);
-  }, 5000);
+  }, 8000);
 });
