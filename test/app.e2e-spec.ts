@@ -13,12 +13,14 @@ describe('AppController (e2e)', () => {
 
   beforeAll(async () => {
     const pathToCompose = path.resolve(__dirname, '..') + '/';
+    console.log(pathToCompose);
     environment = await new DockerComposeEnvironment(
       pathToCompose,
       'compose.test.yaml',
     )
       .withBuild()
       .up();
+    console.log('its build');
   });
 
   afterAll(async () => {
@@ -42,5 +44,5 @@ describe('AppController (e2e)', () => {
         Accept: 'application/json',
       })
       .expect(200);
-  }, 8000);
+  });
 });

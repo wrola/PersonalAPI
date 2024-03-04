@@ -22,32 +22,6 @@ jobs:
         os: [ubuntu-latest]
         node-version: [20.9.0]
 
-    # Service containers to run with `container-job`
-    # services:
-      # Label used to access the service container
-      # postgres:
-      #   # Docker Hub image
-      #   image: postgres
-      #   # Provide the password for postgres
-      #   env:
-      #     POSTGRES_USER: ${{env.POSTGRES_USER}}
-      #     POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
-      #     POSTGRES_HOST: ${{env.POSTGRES_HOST}}
-      #   ports:
-      #     - 5433:5432
-
-        # Set health checks to wait until postgres has started
-        # options: >-
-        #   --health-cmd pg_isready
-        #   --health-interval 10s
-        #   --health-timeout 5s
-        #   --health-retries 5
-
-      # qdrant:
-      #   image: qdrant/qdrant:latest
-      #   ports:
-      #     - 6333:6333
-
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-node@v3
@@ -64,17 +38,6 @@ jobs:
 
       - name: Install packages
         run: npm ci
-
-      # - name: Build application
-      #   run: npm run build
-
-      # - name: Run migrations
-      #   run: npm run migration:run
-      #   env:
-      #     POSTGRES_USER: ${{env.POSTGRES_USER}}
-      #     POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
-      #     POSTGRES_HOST: ${{env.POSTGRES_HOST}}
-      #     POSTGRES_PORT: 5433
 
       - name: Run e2e tests
         run: npm run test:e2e
