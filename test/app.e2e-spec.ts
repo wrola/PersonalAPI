@@ -21,7 +21,7 @@ describe('AppController (e2e)', () => {
       .withBuild()
       .up();
     console.log('its build');
-  });
+  }, 8000);
 
   afterAll(async () => {
     await environment.down();
