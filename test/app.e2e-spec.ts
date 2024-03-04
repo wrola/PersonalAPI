@@ -10,6 +10,7 @@ import path = require('path');
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let environment: StartedDockerComposeEnvironment;
+
   beforeAll(async () => {
     const pathToCompose = path.resolve(__dirname, '..') + '/';
     environment = await new DockerComposeEnvironment(
@@ -18,16 +19,19 @@ describe('AppController (e2e)', () => {
     )
       .withBuild()
       .up();
+  });
+
+  afterAll(async () => {
+    await environment.down();
+  });
+
+  beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
-  }, 10 * 1000);
-
-  afterAll(async () => {
-    await environment.down();
   });
 
   it('/health (GET)', async () => {
@@ -38,5 +42,5 @@ describe('AppController (e2e)', () => {
         Accept: 'application/json',
       })
       .expect(200);
-  });
+  }, 5000);
 });
