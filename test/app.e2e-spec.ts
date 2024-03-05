@@ -5,6 +5,7 @@ import { AppModule } from './../src/app.module';
 import {
   DockerComposeEnvironment,
   StartedDockerComposeEnvironment,
+  Wait,
 } from 'testcontainers';
 import path = require('path');
 describe('AppController (e2e)', () => {
@@ -18,10 +19,17 @@ describe('AppController (e2e)', () => {
       pathToCompose,
       'compose.test.yaml',
     )
+      .withWaitStrategy(
+        'postgres_test',
+        Wait.forLogMessage('database system is ready to accept connections', 1),
+      )
+      .withWaitStrategy(
+        'qdrant_test',
+        Wait.forLogMessage('Qdrant HTTP listening on 6333', 1),
+      )
       .withBuild()
       .up();
-    console.log('its build');
-  }, 8000);
+  }, 10000);
 
   afterAll(async () => {
     await environment.down();
