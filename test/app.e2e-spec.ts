@@ -2,33 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import {
-  DockerComposeEnvironment,
-  StartedDockerComposeEnvironment,
-  Wait,
-} from 'testcontainers';
-import path = require('path');
+import { environmentSetup } from './fixtures/enviroment.setup';
+import { StartedDockerComposeEnvironment } from 'testcontainers';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let environment: StartedDockerComposeEnvironment;
 
   beforeAll(async () => {
-    const pathToCompose = path.resolve(__dirname, '..') + '/';
-    console.log(pathToCompose);
-    environment = await new DockerComposeEnvironment(
-      pathToCompose,
-      'compose.test.yaml',
-    )
-      .withWaitStrategy(
-        'postgres_test',
-        Wait.forLogMessage('database system is ready to accept connections', 1),
-      )
-      .withWaitStrategy(
-        'qdrant_test',
-        Wait.forLogMessage('Qdrant HTTP listening on 6333', 1),
-      )
-      .withBuild()
-      .up();
+    environment = await environmentSetup();
   }, 15000);
 
   afterAll(async () => {
