@@ -29,7 +29,7 @@ describe('AppController (e2e)', () => {
       )
       .withBuild()
       .up();
-  }, 10000);
+  }, 15000);
 
   afterAll(async () => {
     await environment.down();
