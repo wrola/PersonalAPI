@@ -1,0 +1,37 @@
+services:
+  qdrant_db:
+    container_name: qdrant_test
+    image: qdrant/qdrant:latest
+    restart: always
+    ports:
+      - "6334:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT_URL=${QDRANT_URL}
+      - network
+
+  postgres_db:
+    container_name: postgres_test
+    image: postgres:latest
+    restart: always
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres:/data/postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE_TYPE=${DATABASE_TYPE}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  postgres:
+  qdrant_storage:
