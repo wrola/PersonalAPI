@@ -7,7 +7,7 @@ import { StartedDockerComposeEnvironment } from 'testcontainers';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let environment: StartedDockerComposeEnvironment;
-  const timeoutForEnvironmentSetupInSeconds = 15 * 1000;
+  const timeoutForEnvironmentSetupInSeconds = 16 * 1000;
 
   beforeAll(async () => {
     environment = await environmentSetup();
