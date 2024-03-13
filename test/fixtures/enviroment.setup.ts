@@ -11,7 +11,7 @@ export const environmentSetup = async () => {
     )
     .withWaitStrategy(
       'postgres_test',
-      Wait.forLogMessage('database system is ready to accept connections', 1),
+      Wait.forLogMessage('database system is ready to accept connections', 2),
     )
     .withBuild()
     .up();
