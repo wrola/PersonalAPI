@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@langchain/core": "^0.1.40",
-    "@langchain/openai": "^0.0.19",
+    "@langchain/openai": "^0.0.21",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^10.3.3",
     "@nestjs/config": "^3.2.0",
