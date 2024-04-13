@@ -13,6 +13,7 @@ export class UpdateNoteCommandHandler
   async execute(command: UpdateNoteCommand) {
     // logic to update a note
     const { note } = command;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const newNote = Note.create(note.title, note.content, 'main', []); // create or update
     return;
   }
