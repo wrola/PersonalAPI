@@ -1,6 +1,6 @@
 import { Body, Controller, Put } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { NoteInputDto } from './dto/note-inpu.dto';
+import { NoteInputDto } from './dto/note-input.dto';
 import { UpdateNoteCommand } from '../core/commands/updateNote.command';
 
 @Controller('/notes')
