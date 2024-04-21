@@ -40,7 +40,7 @@
     "class-validator": "^0.14.1",
     "helmet": "^7.1.0",
     "langchain": "^0.1.33",
-    "pg": "^8.4.0",
+    "pg": "^8.11.5",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.2.0",
     "typeorm": "0.3.20",
