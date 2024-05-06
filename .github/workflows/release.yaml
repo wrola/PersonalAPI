@@ -34,3 +34,30 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  deploy_to_environment:
+    name: run playbook for deployment
+    runs-on: ubuntu-latest
+    needs: push_to_registry
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        shell: bash
+        run: |
+          eval `ssh-agent -s`
+          mkdir -p /home/runner/.ssh/
+          touch /home/runner/.ssh/id_rsa
+          echo -e "${{env.SSH_KEY}}" > /home/runner/.ssh/id_rsa
+          chmod 700 /home/runner/.ssh/id_rsa
+          ssh-keyscan -t rsa,dsa,ecdsa,ed25519 ${{env.SSH_HOST}} >> /home/runner/.ssh/known_hosts
+
+      - name: Run ansible script
+        shell: bash
+        run: |
+          service ssh status
+          cd infrastructure/ansible
+          ansible-galaxy install geerlingguy.docker /etc/ansible/roles
+          echo -e "${{env.ANSIBLE_VAULT_PASS}}" >> pass
+          ansible-playbook -i ${{ env.ENVIRONMENT }} deployment.yaml --vault-password-file pass

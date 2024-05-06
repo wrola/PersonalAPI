@@ -38,21 +38,8 @@ services:
       - postgres:/data/postgres
     env_file:
       - .env
-    labels:
-      - com.centurylinklabs.watchtower.monitor-only=true
     networks:
       - network
-
-  watchtower:
-    image: containrrr/watchtower:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - REPO_USER=${REPO_USER}
-      - REPO_PASS=${REPO_PASS}
-    networks:
-      - network
-    command: --interval 43200
 
 networks:
   network:

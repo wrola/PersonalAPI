@@ -1,0 +1,39 @@
+- name: Role for web
+  hosts: web
+  roles:
+    - { role: 'geerlingguy.docker', tags: 'docker' }
+
+  tasks:
+    - name: Install required packages # noqa 403
+      apt:
+       pkg:
+         - python3-pip
+         - python3-setuptools
+       state: latest
+       update_cache: true
+      tags:
+        - docker_run
+    - name: install docker python module
+      pip:
+        name: docker
+      tags: docker_run
+    - name: login into docker registry
+      community.general.docker_login:
+        username: "{{ REPO_USER }}"
+        password: "{{ REPO_PASS }}"
+      tags: docker_run
+    - name: pull image
+      community.docker.docker_image:
+        name: "{{ IMAGE_NAME }}"
+        source: pull
+      tags: docker_run
+    - name: run docker compose container
+      community.docker.docker_compose_v2:
+        project_src: .
+        project_name: "{{ IMAGE_NAME }}"
+        state: present
+        pull: missing
+        recreate: yes
+        remove_orphans: yes
+        tags: docker_run
+      tags: docker_run
