@@ -96,7 +96,7 @@ export class MemoryService implements IMemoryService {
 
   async plan(query: string, actions: any[], context: any[]): Promise<string> {
     const model = new ChatOpenAI({
-      modelName: 'gpt-4-1106-preview',
+      modelName: 'gpt-4o',
       temperature: 0,
       maxConcurrency: 1,
     });

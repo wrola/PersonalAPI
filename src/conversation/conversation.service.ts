@@ -35,7 +35,7 @@ export class ConversationService {
         context.memories;
       }
       const modelSettings = {
-        modelName: 'gpt-4-1106-preview',
+        modelName: 'gpt-4o',
         temperature: 0.7,
       };
       if (context.schemas) {
