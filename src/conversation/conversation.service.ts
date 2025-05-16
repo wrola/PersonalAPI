@@ -41,7 +41,7 @@ export class ConversationService {
       if (context.schemas) {
         const chat = new ChatOpenAI(modelSettings).bind({
           functions: [...context.schemas],
-          function_call: { name: context.defaultSchema } || undefined,
+          function_call: { name: context.defaultSchema }
         });
 
         const result = await chat.invoke(context.messages);
