@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 import { Memory } from './memory/core/entities/memory.entity';
 import { Message } from './memory/core/entities/message.entity';
 import { Skill } from './skills/core/skill.entity';
-import path = require('path');
+import * as path from 'path';
 
 export const dataSource = new DataSource({
   type: 'postgres',
